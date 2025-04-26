@@ -55,8 +55,28 @@ export class PostgresStorage implements IStorage {
   async getBudget(userId: number): Promise<Budget | undefined> {
     if (!db) return undefined;
     try {
-      const result = await db.select().from(budgets).where(eq(budgets.userId, userId));
-      return result[0];
+      // Use SQL directly to avoid column name issues
+      const query = sql`
+        SELECT * FROM budgets WHERE "userid" = ${userId}
+      `;
+      
+      const result = await db.execute(query);
+      
+      if (!result.rows || result.rows.length === 0) {
+        return undefined;
+      }
+      
+      // Convert the raw result to our Budget type
+      const budget: Budget = {
+        id: result.rows[0].id as number,
+        userId: result.rows[0].userid as number,
+        amount: result.rows[0].amount as string,
+        periodStart: result.rows[0].periodStart as string,
+        periodEnd: result.rows[0].periodEnd as string,
+        currency: result.rows[0].currency as string
+      };
+      
+      return budget;
     } catch (error) {
       console.error('Error in getBudget:', error);
       return undefined;
@@ -75,7 +95,7 @@ export class PostgresStorage implements IStorage {
       
       // Use SQL directly to avoid type issues
       const query = sql`
-        INSERT INTO budgets ("userId", amount, "periodStart", "periodEnd", currency)
+        INSERT INTO budgets (userid, amount, "periodstart", "periodend", currency)
         VALUES (${userId}, ${amount}, ${periodStart}, ${periodEnd}, ${currency})
         RETURNING *
       `;
@@ -89,10 +109,10 @@ export class PostgresStorage implements IStorage {
       // Convert the raw result to our Budget type
       const budget: Budget = {
         id: result.rows[0].id as number,
-        userId: result.rows[0].userId as number,
+        userId: result.rows[0].userid as number,
         amount: result.rows[0].amount as string,
-        periodStart: result.rows[0].periodStart as string,
-        periodEnd: result.rows[0].periodEnd as string,
+        periodStart: result.rows[0].periodstart as string,
+        periodEnd: result.rows[0].periodend as string,
         currency: result.rows[0].currency as string
       };
       
@@ -106,30 +126,76 @@ export class PostgresStorage implements IStorage {
   async updateBudget(id: number, budgetData: Partial<InsertBudget>): Promise<Budget | undefined> {
     if (!db) return undefined;
     try {
-      // Process data to match our types
-      const processedData: any = {};
+      // Build the SET clause for our update query
+      const setClauses = [];
+      const values = [];
+      let paramIndex = 1;
+      
       if (budgetData.amount !== undefined) {
-        processedData.amount = budgetData.amount.toString();
+        setClauses.push(`amount = $${paramIndex}`);
+        values.push(budgetData.amount.toString());
+        paramIndex++;
       }
+      
       if (budgetData.periodStart !== undefined) {
-        processedData.periodStart = new Date(budgetData.periodStart).toISOString();
+        setClauses.push(`periodstart = $${paramIndex}`);
+        values.push(new Date(budgetData.periodStart).toISOString());
+        paramIndex++;
       }
+      
       if (budgetData.periodEnd !== undefined) {
-        processedData.periodEnd = new Date(budgetData.periodEnd).toISOString();
+        setClauses.push(`periodend = $${paramIndex}`);
+        values.push(new Date(budgetData.periodEnd).toISOString());
+        paramIndex++;
       }
+      
       if (budgetData.currency !== undefined) {
-        processedData.currency = budgetData.currency;
+        setClauses.push(`currency = $${paramIndex}`);
+        values.push(budgetData.currency);
+        paramIndex++;
       }
+      
       if (budgetData.userId !== undefined) {
-        processedData.userId = budgetData.userId;
+        setClauses.push(`userid = $${paramIndex}`);
+        values.push(budgetData.userId);
+        paramIndex++;
       }
       
-      const result = await db.update(budgets)
-        .set(processedData)
-        .where(eq(budgets.id, id))
-        .returning();
+      if (setClauses.length === 0) {
+        return undefined; // Nothing to update
+      }
       
-      return result[0];
+      // Add the id at the end for the WHERE clause
+      values.push(id);
+      
+      // Construct the query
+      const queryText = `
+        UPDATE budgets 
+        SET ${setClauses.join(', ')} 
+        WHERE id = $${paramIndex}
+        RETURNING *
+      `;
+      
+      const result = await db.execute({
+        text: queryText,
+        values: values
+      });
+      
+      if (!result.rows || result.rows.length === 0) {
+        return undefined;
+      }
+      
+      // Convert the raw result to our Budget type
+      const budget: Budget = {
+        id: result.rows[0].id as number,
+        userId: result.rows[0].userid as number,
+        amount: result.rows[0].amount as string,
+        periodStart: result.rows[0].periodstart as string,
+        periodEnd: result.rows[0].periodend as string,
+        currency: result.rows[0].currency as string
+      };
+      
+      return budget;
     } catch (error) {
       console.error('Error in updateBudget:', error);
       return undefined;
@@ -140,12 +206,34 @@ export class PostgresStorage implements IStorage {
   async getTransactions(userId: number): Promise<Transaction[]> {
     if (!db) return [];
     try {
-      const result = await db.select()
-        .from(transactions)
-        .where(eq(transactions.userId, userId))
-        .orderBy(transactions.timestamp);
+      // Use SQL directly to avoid column name issues
+      const query = sql`
+        SELECT * FROM transactions WHERE userid = ${userId}
+        ORDER BY timestamp
+      `;
       
-      return result;
+      const result = await db.execute(query);
+      
+      if (!result.rows) {
+        return [];
+      }
+      
+      // Convert the raw results to our Transaction type
+      const transactions: Transaction[] = result.rows.map(row => ({
+        id: row.id as number,
+        userId: row.userid as number,
+        hash: row.hash as string,
+        from: row.from as string,
+        to: row.to as string,
+        amount: row.amount as string,
+        timestamp: row.timestamp as string,
+        currency: row.currency as string,
+        category: row.category as string | null,
+        status: row.status as string,
+        type: row.type as string
+      }));
+      
+      return transactions;
     } catch (error) {
       console.error('Error in getTransactions:', error);
       return [];
@@ -155,11 +243,33 @@ export class PostgresStorage implements IStorage {
   async getTransactionByHash(hash: string): Promise<Transaction | undefined> {
     if (!db) return undefined;
     try {
-      const result = await db.select()
-        .from(transactions)
-        .where(eq(transactions.hash, hash));
+      // Use SQL directly to avoid column name issues
+      const query = sql`
+        SELECT * FROM transactions WHERE hash = ${hash}
+      `;
       
-      return result[0];
+      const result = await db.execute(query);
+      
+      if (!result.rows || result.rows.length === 0) {
+        return undefined;
+      }
+      
+      // Convert the raw result to our Transaction type
+      const transaction: Transaction = {
+        id: result.rows[0].id as number,
+        userId: result.rows[0].userid as number,
+        hash: result.rows[0].hash as string,
+        from: result.rows[0].from as string,
+        to: result.rows[0].to as string,
+        amount: result.rows[0].amount as string,
+        timestamp: result.rows[0].timestamp as string,
+        currency: result.rows[0].currency as string,
+        category: result.rows[0].category as string | null,
+        status: result.rows[0].status as string,
+        type: result.rows[0].type as string
+      };
+      
+      return transaction;
     } catch (error) {
       console.error('Error in getTransactionByHash:', error);
       return undefined;
@@ -183,7 +293,7 @@ export class PostgresStorage implements IStorage {
       
       // Use SQL directly to avoid type issues
       const query = sql`
-        INSERT INTO transactions ("userId", hash, "from", "to", amount, "timestamp", currency, category, status, type)
+        INSERT INTO transactions (userid, hash, "from", "to", amount, timestamp, currency, category, status, type)
         VALUES (${userId}, ${hash}, ${from}, ${to}, ${amount}, ${timestamp}, ${currency}, ${category}, ${status}, ${type})
         RETURNING *
       `;
@@ -197,7 +307,7 @@ export class PostgresStorage implements IStorage {
       // Convert the raw result to our Transaction type
       const transaction: Transaction = {
         id: result.rows[0].id as number,
-        userId: result.rows[0].userId as number,
+        userId: result.rows[0].userid as number,
         hash: result.rows[0].hash as string,
         from: result.rows[0].from as string,
         to: result.rows[0].to as string,
@@ -232,12 +342,28 @@ export class PostgresStorage implements IStorage {
   async getNotifications(userId: number): Promise<Notification[]> {
     if (!db) return [];
     try {
-      const result = await db.select()
-        .from(notifications)
-        .where(eq(notifications.userId, userId))
-        .orderBy(notifications.timestamp);
+      // Use SQL directly to avoid column name issues
+      const query = sql`
+        SELECT * FROM notifications WHERE userid = ${userId}
+        ORDER BY timestamp
+      `;
       
-      return result;
+      const result = await db.execute(query);
+      
+      if (!result.rows) {
+        return [];
+      }
+      
+      // Convert the raw results to our Notification type
+      const notifications: Notification[] = result.rows.map(row => ({
+        id: row.id as number,
+        userId: row.userid as number,
+        message: row.message as string,
+        timestamp: row.timestamp as string,
+        read: row.read as boolean
+      }));
+      
+      return notifications;
     } catch (error) {
       console.error('Error in getNotifications:', error);
       return [];
@@ -255,7 +381,7 @@ export class PostgresStorage implements IStorage {
       
       // Use SQL directly to avoid type issues
       const query = sql`
-        INSERT INTO notifications ("userId", message, "timestamp", read)
+        INSERT INTO notifications (userid, message, timestamp, read)
         VALUES (${userId}, ${message}, ${timestamp}, ${read})
         RETURNING *
       `;
@@ -269,7 +395,7 @@ export class PostgresStorage implements IStorage {
       // Convert the raw result to our Notification type
       const notification: Notification = {
         id: result.rows[0].id as number,
-        userId: result.rows[0].userId as number,
+        userId: result.rows[0].userid as number,
         message: result.rows[0].message as string,
         timestamp: result.rows[0].timestamp as string,
         read: result.rows[0].read as boolean
@@ -285,12 +411,30 @@ export class PostgresStorage implements IStorage {
   async markNotificationAsRead(id: number): Promise<Notification | undefined> {
     if (!db) return undefined;
     try {
-      const result = await db.update(notifications)
-        .set({ read: true })
-        .where(eq(notifications.id, id))
-        .returning();
+      // Use SQL directly to avoid column name issues
+      const query = sql`
+        UPDATE notifications 
+        SET read = true 
+        WHERE id = ${id}
+        RETURNING *
+      `;
       
-      return result[0];
+      const result = await db.execute(query);
+      
+      if (!result.rows || result.rows.length === 0) {
+        return undefined;
+      }
+      
+      // Convert the raw result to our Notification type
+      const notification: Notification = {
+        id: result.rows[0].id as number,
+        userId: result.rows[0].userid as number,
+        message: result.rows[0].message as string,
+        timestamp: result.rows[0].timestamp as string,
+        read: result.rows[0].read as boolean
+      };
+      
+      return notification;
     } catch (error) {
       console.error('Error in markNotificationAsRead:', error);
       return undefined;
