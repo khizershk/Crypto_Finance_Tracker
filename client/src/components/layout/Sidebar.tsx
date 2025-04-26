@@ -39,18 +39,18 @@ export function Sidebar() {
         </div>
         
         {mainNavItems.map((item) => (
-          <Link key={item.path} href={item.path}>
-            <a 
-              className={cn(
-                "flex items-center px-4 py-3", 
-                location === item.path 
-                  ? "text-primary bg-primary-50 border-r-4 border-primary" 
-                  : "text-slate-600 hover:bg-slate-50"
-              )}
-            >
-              <i className={`${item.icon} mr-3 text-lg`}></i>
-              <span>{item.label}</span>
-            </a>
+          <Link 
+            key={item.path} 
+            href={item.path}
+            className={cn(
+              "flex items-center px-4 py-3", 
+              location === item.path 
+                ? "text-primary bg-primary-50 border-r-4 border-primary" 
+                : "text-slate-600 hover:bg-slate-50"
+            )}
+          >
+            <i className={`${item.icon} mr-3 text-lg`}></i>
+            <span>{item.label}</span>
           </Link>
         ))}
         
@@ -59,18 +59,18 @@ export function Sidebar() {
         </div>
         
         {settingsNavItems.map((item) => (
-          <Link key={item.path} href={item.path}>
-            <a 
-              className={cn(
-                "flex items-center px-4 py-3", 
-                location === item.path 
-                  ? "text-primary bg-primary-50 border-r-4 border-primary" 
-                  : "text-slate-600 hover:bg-slate-50"
-              )}
-            >
-              <i className={`${item.icon} mr-3 text-lg`}></i>
-              <span>{item.label}</span>
-            </a>
+          <Link 
+            key={item.path} 
+            href={item.path}
+            className={cn(
+              "flex items-center px-4 py-3", 
+              location === item.path 
+                ? "text-primary bg-primary-50 border-r-4 border-primary" 
+                : "text-slate-600 hover:bg-slate-50"
+            )}
+          >
+            <i className={`${item.icon} mr-3 text-lg`}></i>
+            <span>{item.label}</span>
           </Link>
         ))}
       </nav>

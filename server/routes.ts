@@ -154,14 +154,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/transactions/categorized', async (req, res) => {
+  app.get('/api/categorized-transactions', async (req, res) => {
     // Default route that works with the default query client
     const userId = req.query.userId ? parseInt(req.query.userId as string) : 1;
     const categorizedTransactions = await storage.getCategorizedTransactions(userId);
     res.json(categorizedTransactions);
   });
 
-  app.get('/api/transactions/:userId/categorized', async (req, res) => {
+  app.get('/api/categorized-transactions/:userId', async (req, res) => {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
       return res.status(400).json({ message: 'Invalid user ID' });

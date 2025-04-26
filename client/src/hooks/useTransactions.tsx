@@ -16,7 +16,7 @@ export function useTransactions(userId = DEFAULT_USER_ID) {
   const { 
     data: categorizedTransactions 
   } = useQuery({
-    queryKey: ['/api/transactions', userId, 'categorized'],
+    queryKey: ['/api/categorized-transactions', userId],
   });
 
   // Add a new transaction
@@ -28,7 +28,7 @@ export function useTransactions(userId = DEFAULT_USER_ID) {
     onSuccess: () => {
       // Invalidate transactions queries to refetch data
       queryClient.invalidateQueries({ queryKey: ['/api/transactions', userId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/transactions', userId, 'categorized'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categorized-transactions', userId] });
     },
   });
 
