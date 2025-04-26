@@ -46,8 +46,8 @@ export default function Budget() {
     resolver: zodResolver(budgetFormSchema),
     defaultValues: {
       amount: budget ? Number(budget.amount) : 0,
-      periodStart: budget ? new Date(budget.periodStart) : new Date(),
-      periodEnd: budget ? new Date(budget.periodEnd) : new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      periodStart: budget && budget.periodStart ? new Date(budget.periodStart) : new Date(),
+      periodEnd: budget && budget.periodEnd ? new Date(budget.periodEnd) : new Date(new Date().setMonth(new Date().getMonth() + 1)),
       currency: budget?.currency || 'ETH',
     },
   });
@@ -61,6 +61,13 @@ export default function Budget() {
     } else {
       createBudget.mutate(data);
     }
+  };
+
+  // Helper function to safely format date
+  const formatDate = (date: any): string => {
+    return date && date instanceof Date && !isNaN(date.getTime()) 
+      ? format(date, "PPP") 
+      : "Pick a date";
   };
 
   return (
@@ -154,11 +161,7 @@ export default function Budget() {
                                         !field.value && "text-muted-foreground"
                                       )}
                                     >
-                                      {field.value ? (
-                                        format(field.value, "PPP")
-                                      ) : (
-                                        <span>Pick a date</span>
-                                      )}
+                                      {formatDate(field.value)}
                                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                     </Button>
                                   </FormControl>
@@ -196,11 +199,7 @@ export default function Budget() {
                                         !field.value && "text-muted-foreground"
                                       )}
                                     >
-                                      {field.value ? (
-                                        format(field.value, "PPP")
-                                      ) : (
-                                        <span>Pick a date</span>
-                                      )}
+                                      {formatDate(field.value)}
                                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                     </Button>
                                   </FormControl>
