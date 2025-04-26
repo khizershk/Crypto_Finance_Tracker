@@ -15,10 +15,14 @@ export const connectToDatabase = async () => {
     // Fix for TypeScript string vs undefined issue
     const mongoUri: string = process.env.MONGODB_URI;
     
+    console.log('Attempting to connect to MongoDB with URI:', mongoUri.replace(/:([^:@]+)@/, ':****@')); // Log the URI (with password hidden)
+    
     // Set a reasonable timeout to avoid hanging
     await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 5000, // 5 seconds
       connectTimeoutMS: 10000, // 10 seconds
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     });
     
     console.log('Connected to MongoDB successfully');

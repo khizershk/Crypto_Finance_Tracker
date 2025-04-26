@@ -45,38 +45,36 @@ app.use((req, res, next) => {
     let connectedToMongo = false;
     let connectedToPg = false;
     
-    // First try PostgreSQL (preferred)
+    // We'll prioritize MongoDB connection below
+    // (This section intentionally left empty to avoid duplicate connection attempts)
+    
+    // First priority is MongoDB (as requested by user)
     try {
-      // Try to initialize PostgreSQL with schema
-      connectedToPg = await initializeDatabase();
-      if (connectedToPg) {
-        console.log("PostgreSQL database initialized successfully");
-      } else {
-        // Fallback to just connecting
-        connectedToPg = await connectToPgDatabase();
-        if (connectedToPg) {
-          console.log("Connected to PostgreSQL database");
-        }
+      console.log("Initializing MongoDB database...");
+      connectedToMongo = await connectToDatabase();
+      if (connectedToMongo) {
+        console.log("MongoDB connection successful");
       }
     } catch (error) {
-      console.error("Error connecting to PostgreSQL:", error);
+      console.error("Error connecting to MongoDB:", error);
     }
     
-    // If PostgreSQL fails, try MongoDB as fallback
-    if (!connectedToPg) {
+    // Only try PostgreSQL if MongoDB fails
+    if (!connectedToMongo) {
       try {
-        connectedToMongo = await connectToDatabase();
-        if (connectedToMongo) {
-          console.log("Using MongoDB database");
+        console.log("Falling back to PostgreSQL...");
+        connectedToPg = await connectToPgDatabase();
+        if (connectedToPg) {
+          console.log("PostgreSQL connection successful");
         }
       } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
+        console.error("Error connecting to PostgreSQL:", error);
       }
     }
     
     // Initialize storage system
-    // Priority: PostgreSQL > MongoDB > in-memory
-    const storageType = connectedToPg ? 'postgres' : (connectedToMongo ? 'mongodb' : 'memory');
+    // Priority: MongoDB > PostgreSQL > in-memory
+    const storageType = connectedToMongo ? 'mongodb' : (connectedToPg ? 'postgres' : 'memory');
     await initializeStorage(storageType);
     
     if (connectedToMongo && !connectedToPg) {
