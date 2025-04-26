@@ -73,8 +73,8 @@ app.use((req, res, next) => {
     }
     
     // Initialize storage system
-    // Priority: MongoDB > PostgreSQL > in-memory
-    const storageType = connectedToMongo ? 'mongodb' : (connectedToPg ? 'postgres' : 'memory');
+    // Priority: MongoDB > PostgreSQL > persistent-memory
+    const storageType = connectedToMongo ? 'mongodb' : (connectedToPg ? 'postgres' : 'persistent-memory');
     await initializeStorage(storageType);
     
     if (connectedToMongo && !connectedToPg) {

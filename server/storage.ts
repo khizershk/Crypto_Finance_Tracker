@@ -29,15 +29,15 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private budgets: Map<number, Budget>;
-  private transactions: Map<number, Transaction>;
-  private notifications: Map<number, Notification>;
+  protected users: Map<number, User>;
+  protected budgets: Map<number, Budget>;
+  protected transactions: Map<number, Transaction>;
+  protected notifications: Map<number, Notification>;
   
-  private nextUserId: number;
-  private nextBudgetId: number;
-  private nextTransactionId: number;
-  private nextNotificationId: number;
+  protected nextUserId: number;
+  protected nextBudgetId: number;
+  protected nextTransactionId: number;
+  protected nextNotificationId: number;
 
   constructor() {
     this.users = new Map();
@@ -186,11 +186,120 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Default to in-memory storage
-let storage: IStorage = new MemStorage();
+// Import fs and path using ES modules
+import * as fs from 'fs';
+import * as path from 'path';
+
+// Enhanced memory storage with file persistence
+export class PersistentMemStorage extends MemStorage {
+  private filePath: string = './data/persistent-storage.json';
+  
+  constructor() {
+    super();
+    this.loadFromFile();
+    
+    // Save data every 5 minutes
+    setInterval(() => this.saveToFile(), 5 * 60 * 1000);
+  }
+  
+  private loadFromFile() {
+    try {
+      // Ensure directory exists
+      const dir = path.dirname(this.filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      
+      // Load data if file exists
+      if (fs.existsSync(this.filePath)) {
+        const data = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
+        
+        // Restore maps from the loaded data
+        this.users = new Map(Object.entries(data.users || {}).map(([k, v]) => [Number(k), v as User]));
+        this.budgets = new Map(Object.entries(data.budgets || {}).map(([k, v]) => [Number(k), v as Budget]));
+        this.transactions = new Map(Object.entries(data.transactions || {}).map(([k, v]) => [Number(k), v as Transaction]));
+        this.notifications = new Map(Object.entries(data.notifications || {}).map(([k, v]) => [Number(k), v as Notification]));
+        
+        // Set ID counters
+        this.nextUserId = Math.max(1, ...Array.from(this.users.keys())) + 1;
+        this.nextBudgetId = Math.max(1, ...Array.from(this.budgets.keys())) + 1;
+        this.nextTransactionId = Math.max(1, ...Array.from(this.transactions.keys())) + 1;
+        this.nextNotificationId = Math.max(1, ...Array.from(this.notifications.keys())) + 1;
+        
+        console.log('Loaded data from persistent storage');
+      }
+    } catch (error) {
+      console.error('Error loading data from file:', error);
+    }
+  }
+  
+  private saveToFile() {
+    try {
+      // Convert maps to objects for JSON serialization
+      const data = {
+        users: Object.fromEntries(this.users),
+        budgets: Object.fromEntries(this.budgets),
+        transactions: Object.fromEntries(this.transactions),
+        notifications: Object.fromEntries(this.notifications)
+      };
+      
+      // Ensure directory exists
+      const dir = path.dirname(this.filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      
+      // Write data to file
+      fs.writeFileSync(this.filePath, JSON.stringify(data, null, 2), 'utf8');
+      console.log('Saved data to persistent storage');
+    } catch (error) {
+      console.error('Error saving data to file:', error);
+    }
+  }
+  
+  // Override create methods to save after each important change
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const user = await super.createUser(insertUser);
+    this.saveToFile();
+    return user;
+  }
+  
+  async createBudget(insertBudget: InsertBudget): Promise<Budget> {
+    const budget = await super.createBudget(insertBudget);
+    this.saveToFile();
+    return budget;
+  }
+  
+  async updateBudget(id: number, budgetData: Partial<InsertBudget>): Promise<Budget | undefined> {
+    const budget = await super.updateBudget(id, budgetData);
+    this.saveToFile();
+    return budget;
+  }
+  
+  async createTransaction(insertTransaction: InsertTransaction): Promise<Transaction> {
+    const transaction = await super.createTransaction(insertTransaction);
+    this.saveToFile();
+    return transaction;
+  }
+  
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const notification = await super.createNotification(insertNotification);
+    this.saveToFile();
+    return notification;
+  }
+  
+  async markNotificationAsRead(id: number): Promise<Notification | undefined> {
+    const notification = await super.markNotificationAsRead(id);
+    this.saveToFile();
+    return notification;
+  }
+}
+
+// Default to persistent memory storage
+let storage: IStorage = new PersistentMemStorage();
 
 // Function to choose appropriate storage implementation
-export async function initializeStorage(type: 'postgres' | 'mongodb' | 'memory'): Promise<IStorage> {
+export async function initializeStorage(type: 'postgres' | 'mongodb' | 'memory' | 'persistent-memory'): Promise<IStorage> {
   try {
     if (type === 'postgres') {
       try {
@@ -198,8 +307,8 @@ export async function initializeStorage(type: 'postgres' | 'mongodb' | 'memory')
         storage = new PostgresStorage();
         console.log('Using PostgreSQL storage');
       } catch (error) {
-        console.error('Failed to initialize PostgreSQL storage, falling back to in-memory storage:', error);
-        storage = new MemStorage();
+        console.error('Failed to initialize PostgreSQL storage, falling back to persistent memory storage:', error);
+        storage = new PersistentMemStorage();
       }
     } else if (type === 'mongodb') {
       try {
@@ -207,12 +316,15 @@ export async function initializeStorage(type: 'postgres' | 'mongodb' | 'memory')
         storage = new MongoDBStorage();
         console.log('Using MongoDB storage');
       } catch (error) {
-        console.error('Failed to initialize MongoDB storage, falling back to in-memory storage:', error);
-        storage = new MemStorage();
+        console.error('Failed to initialize MongoDB storage, falling back to persistent memory storage:', error);
+        storage = new PersistentMemStorage();
       }
-    } else {
-      console.log('Using in-memory storage');
+    } else if (type === 'memory') {
+      console.log('Using regular in-memory storage (data will be lost on restart)');
       storage = new MemStorage();
+    } else {
+      console.log('Using persistent memory storage');
+      storage = new PersistentMemStorage();
     }
   } catch (error) {
     console.error('Error initializing storage:', error);
