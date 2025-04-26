@@ -23,7 +23,7 @@ export function MetaMaskConnect() {
           hash: tx.hash,
           from: tx.from,
           to: tx.to || '',
-          amount: parseFloat(tx.value),
+          amount: tx.value.toString(),
           timestamp: tx.timestamp,
           currency: 'ETH',
           category: getCategoryFromAddress(tx.to || ''),
