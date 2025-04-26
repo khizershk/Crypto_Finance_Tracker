@@ -74,13 +74,46 @@ export const insertNotificationSchema = createInsertSchema(notifications).pick({
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+// Make string|number to support both PostgreSQL and MongoDB
+export type User = {
+  id: number;
+  username: string;
+  password: string;
+};
 
 export type InsertBudget = z.infer<typeof insertBudgetSchema>;
-export type Budget = typeof budgets.$inferSelect;
+// Define a type compatible with both PostgreSQL and MongoDB
+export type Budget = {
+  id: number;
+  userId: number;
+  amount: string;
+  periodStart: string;
+  periodEnd: string;
+  currency: string;
+};
 
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
-export type Transaction = typeof transactions.$inferSelect;
+// Define a type compatible with both PostgreSQL and MongoDB
+export type Transaction = {
+  id: number;
+  userId: number;
+  hash: string;
+  from: string;
+  to: string;
+  amount: string;
+  timestamp: string;
+  currency: string;
+  category: string | null;
+  status: string;
+  type: string;
+};
 
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
-export type Notification = typeof notifications.$inferSelect;
+// Define a type compatible with both PostgreSQL and MongoDB
+export type Notification = {
+  id: number;
+  userId: number;
+  message: string;
+  read: boolean;
+  timestamp: string;
+};

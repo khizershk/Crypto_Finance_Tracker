@@ -1,11 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, initializeStorage } from "./storage";
 import { 
   insertBudgetSchema, 
   insertTransactionSchema, 
   insertNotificationSchema 
 } from "@shared/schema";
+
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
@@ -124,13 +125,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (budget) {
         const transactions = await storage.getTransactions(userId);
         const periodTransactions = transactions.filter(
-          tx => new Date(tx.timestamp) >= new Date(budget.periodStart) && 
+          (tx: any) => new Date(tx.timestamp) >= new Date(budget.periodStart) && 
                 new Date(tx.timestamp) <= new Date(budget.periodEnd) &&
                 tx.type === 'sent'
         );
         
         const totalSpent = periodTransactions.reduce(
-          (sum, tx) => sum + Number(tx.amount), 0
+          (sum: number, tx: any) => sum + Number(tx.amount), 0
         );
         
         if (totalSpent > Number(budget.amount)) {

@@ -78,7 +78,14 @@ export class MemStorage implements IStorage {
   
   async createBudget(insertBudget: InsertBudget): Promise<Budget> {
     const id = this.nextBudgetId++;
-    const budget: Budget = { ...insertBudget, id };
+    // Format data to match our Budget type
+    const budget: Budget = {
+      ...insertBudget,
+      id,
+      amount: insertBudget.amount.toString(),
+      periodStart: new Date(insertBudget.periodStart).toISOString(),
+      periodEnd: new Date(insertBudget.periodEnd).toISOString(),
+    };
     this.budgets.set(id, budget);
     return budget;
   }
@@ -87,7 +94,25 @@ export class MemStorage implements IStorage {
     const currentBudget = this.budgets.get(id);
     if (!currentBudget) return undefined;
     
-    const updatedBudget: Budget = { ...currentBudget, ...budgetData };
+    // Process data to match our types
+    const processedData: Partial<Budget> = {};
+    if (budgetData.amount !== undefined) {
+      processedData.amount = budgetData.amount.toString();
+    }
+    if (budgetData.periodStart !== undefined) {
+      processedData.periodStart = new Date(budgetData.periodStart).toISOString();
+    }
+    if (budgetData.periodEnd !== undefined) {
+      processedData.periodEnd = new Date(budgetData.periodEnd).toISOString();
+    }
+    if (budgetData.currency !== undefined) {
+      processedData.currency = budgetData.currency;
+    }
+    if (budgetData.userId !== undefined) {
+      processedData.userId = budgetData.userId;
+    }
+    
+    const updatedBudget: Budget = { ...currentBudget, ...processedData };
     this.budgets.set(id, updatedBudget);
     return updatedBudget;
   }
@@ -107,11 +132,13 @@ export class MemStorage implements IStorage {
   
   async createTransaction(insertTransaction: InsertTransaction): Promise<Transaction> {
     const id = this.nextTransactionId++;
-    // Ensure category is at least null if not provided
+    // Format data to match our Transaction type
     const transaction: Transaction = { 
       ...insertTransaction, 
       id,
-      category: insertTransaction.category || null 
+      category: insertTransaction.category || null,
+      amount: insertTransaction.amount.toString(),
+      timestamp: new Date(insertTransaction.timestamp).toISOString()
     };
     this.transactions.set(id, transaction);
     return transaction;
@@ -138,7 +165,13 @@ export class MemStorage implements IStorage {
   
   async createNotification(insertNotification: InsertNotification): Promise<Notification> {
     const id = this.nextNotificationId++;
-    const notification: Notification = { ...insertNotification, id, read: false };
+    // Format data to match our Notification type
+    const notification: Notification = { 
+      ...insertNotification, 
+      id, 
+      read: false,
+      timestamp: new Date(insertNotification.timestamp).toISOString()
+    };
     this.notifications.set(id, notification);
     return notification;
   }
@@ -153,4 +186,25 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Default to in-memory storage
+let storage: IStorage = new MemStorage();
+
+// Function to switch to MongoDB storage if available
+export async function initializeStorage(useMongoDb: boolean): Promise<IStorage> {
+  if (useMongoDb) {
+    try {
+      const { MongoDBStorage } = await import('./mongodb-storage');
+      storage = new MongoDBStorage();
+      console.log('Using MongoDB storage');
+    } catch (error) {
+      console.error('Failed to initialize MongoDB storage, falling back to in-memory storage:', error);
+      storage = new MemStorage();
+    }
+  } else {
+    console.log('Using in-memory storage');
+    storage = new MemStorage();
+  }
+  return storage;
+}
+
+export { storage };

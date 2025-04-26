@@ -1,6 +1,6 @@
 import { IStorage } from './storage';
 import { User, Budget, Transaction, Notification, IUser, IBudget, ITransaction, INotification } from './models';
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { 
   InsertUser, User as UserType,
   InsertBudget, Budget as BudgetType,
@@ -8,12 +8,17 @@ import {
   InsertNotification, Notification as NotificationType
 } from '@shared/schema';
 
+// Type guard function to check if a field exists in a document
+function hasId(doc: Document): doc is Document & { _id: mongoose.Types.ObjectId } {
+  return doc._id !== undefined;
+}
+
 // MongoDB-based implementation of the storage interface
 export class MongoDBStorage implements IStorage {
   // Helper method to convert MongoDB documents to our schema types
   private convertUser(user: IUser): UserType {
     return {
-      id: user._id.toString(),
+      id: parseInt(user._id?.toString() || '0', 10),
       username: user.username,
       password: user.password
     };
@@ -21,8 +26,8 @@ export class MongoDBStorage implements IStorage {
 
   private convertBudget(budget: IBudget): BudgetType {
     return {
-      id: budget._id.toString(),
-      userId: parseInt(budget.userId.toString(), 10),
+      id: parseInt(budget._id?.toString() || '0', 10),
+      userId: parseInt(budget.userId?.toString() || '0', 10),
       amount: budget.amount.toString(),
       periodStart: budget.periodStart.toISOString(),
       periodEnd: budget.periodEnd.toISOString(),
@@ -32,8 +37,8 @@ export class MongoDBStorage implements IStorage {
 
   private convertTransaction(transaction: ITransaction): TransactionType {
     return {
-      id: transaction._id.toString(),
-      userId: parseInt(transaction.userId.toString(), 10),
+      id: parseInt(transaction._id?.toString() || '0', 10),
+      userId: parseInt(transaction.userId?.toString() || '0', 10),
       hash: transaction.hash,
       from: transaction.from,
       to: transaction.to,
@@ -48,8 +53,8 @@ export class MongoDBStorage implements IStorage {
 
   private convertNotification(notification: INotification): NotificationType {
     return {
-      id: notification._id.toString(),
-      userId: parseInt(notification.userId.toString(), 10),
+      id: parseInt(notification._id?.toString() || '0', 10),
+      userId: parseInt(notification.userId?.toString() || '0', 10),
       message: notification.message,
       read: notification.read,
       timestamp: notification.timestamp.toISOString()
