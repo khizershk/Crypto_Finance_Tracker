@@ -69,18 +69,28 @@ export function useMetaMask() {
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       
+      console.log('Fetching transaction history for account:', state.account);
+      
       // Get transactions sent by the user
       const sentTxs = await provider.getHistory(state.account);
+      console.log('Raw transactions from MetaMask:', sentTxs);
       
       // Format transactions
-      return sentTxs.map(tx => ({
-        hash: tx.hash,
-        from: tx.from,
-        to: tx.to || '',
-        value: ethers.formatEther(tx.value || 0),
-        timestamp: new Date().toISOString(), // Etherscan API needed for actual timestamp
-        status: tx.confirmations > 0 ? 'confirmed' : 'pending',
-      }));
+      const formattedTxs = sentTxs.map(tx => {
+        const result = {
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to || '',
+          value: ethers.formatEther(tx.value || 0),
+          timestamp: new Date().toISOString(), // Etherscan API needed for actual timestamp
+          status: tx.confirmations > 0 ? 'confirmed' : 'pending',
+        };
+        console.log('Formatted transaction:', result);
+        return result;
+      });
+      
+      console.log('Formatted transactions:', formattedTxs);
+      return formattedTxs;
     } catch (error) {
       console.error('Error fetching transaction history:', error);
       setState(prevState => ({

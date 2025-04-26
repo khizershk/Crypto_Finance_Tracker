@@ -25,6 +25,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(handleZodError);
 
   // Budget routes
+  app.get('/api/budget', async (req, res) => {
+    // Default route that works with the default query client
+    const userId = req.query.userId ? parseInt(req.query.userId as string) : 1;
+    const budget = await storage.getBudget(userId);
+    if (!budget) {
+      return res.json(null); // Return null instead of 404 for easier frontend handling
+    }
+    res.json(budget);
+  });
+
   app.get('/api/budget/:userId', async (req, res) => {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
@@ -78,6 +88,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Transaction routes
+  app.get('/api/transactions', async (req, res) => {
+    // Default route that works with the default query client
+    const userId = req.query.userId ? parseInt(req.query.userId as string) : 1;
+    const transactions = await storage.getTransactions(userId);
+    res.json(transactions);
+  });
+  
   app.get('/api/transactions/:userId', async (req, res) => {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
@@ -134,6 +151,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.status(500).json({ message: 'Failed to create transaction' });
     }
+  });
+
+  app.get('/api/transactions/categorized', async (req, res) => {
+    // Default route that works with the default query client
+    const userId = req.query.userId ? parseInt(req.query.userId as string) : 1;
+    const categorizedTransactions = await storage.getCategorizedTransactions(userId);
+    res.json(categorizedTransactions);
   });
 
   app.get('/api/transactions/:userId/categorized', async (req, res) => {

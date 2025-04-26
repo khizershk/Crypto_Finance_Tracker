@@ -12,23 +12,31 @@ export function MetaMaskConnect() {
   // Mutation to save transactions to backend
   const saveTransactions = useMutation({
     mutationFn: async (transactions: any[]) => {
+      console.log('Syncing transactions:', transactions);
+      
       const promises = transactions.map(tx => {
+        // For accurate type determination based on the 'from' address
+        const isSent = tx.from.toLowerCase() === account?.toLowerCase();
+        
         const transaction = {
           userId: DEFAULT_USER_ID,
           hash: tx.hash,
           from: tx.from,
-          to: tx.to,
+          to: tx.to || '',
           amount: parseFloat(tx.value),
           timestamp: tx.timestamp,
           currency: 'ETH',
-          category: getCategoryFromAddress(tx.to),
+          category: getCategoryFromAddress(tx.to || ''),
           status: tx.status,
-          type: tx.from.toLowerCase() === account?.toLowerCase() ? 'sent' : 'received',
+          type: isSent ? 'sent' : 'received',
         };
+        
+        console.log('Saving transaction:', transaction);
         
         return apiRequest('POST', '/api/transactions', transaction)
           .then(res => res.json())
           .catch(err => {
+            console.error('Error saving transaction:', err);
             // Ignore duplicate transaction errors (409)
             if (!(err.message && err.message.includes('409'))) {
               throw err;
