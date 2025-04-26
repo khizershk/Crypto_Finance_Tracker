@@ -1,13 +1,46 @@
 import { Button } from "@/components/ui/button";
 import { useSyncTransactions } from "@/hooks/useSyncTransactions";
+import { useMetaMask } from "@/hooks/useMetaMask";
 import { Loader2 } from "lucide-react";
 
 export function SyncTransactionsButton() {
   const { syncTransactions, isSyncing } = useSyncTransactions();
+  const { isConnected, account, fetchTransactionHistory } = useMetaMask();
+
+  // Add a debug function to check what's happening with the MetaMask connection
+  const debugMetaMask = async () => {
+    try {
+      console.log("MetaMask connection status:", isConnected);
+      console.log("Connected account:", account);
+      
+      if (isConnected && account) {
+        console.log("Fetching transaction history directly from MetaMask...");
+        const transactions = await fetchTransactionHistory();
+        console.log("Raw transactions from MetaMask:", transactions);
+        
+        if (transactions.length === 0) {
+          console.log("No transactions found. This could be because:");
+          console.log("1. The wallet is new and has no transactions");
+          console.log("2. You're on a test network with no transactions");
+          console.log("3. There's an issue with the Etherscan API");
+        }
+      } else {
+        console.log("Please connect MetaMask before syncing transactions");
+      }
+    } catch (error) {
+      console.error("Error in debug function:", error);
+    }
+  };
+
+  // Enhanced sync function with debugging
+  const handleSync = async () => {
+    await debugMetaMask();
+    syncTransactions();
+  };
 
   return (
     <Button
-      onClick={() => syncTransactions()}
+      onClick={handleSync}
       disabled={isSyncing}
       variant="outline"
       className="flex items-center gap-2"

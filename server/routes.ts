@@ -261,6 +261,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     res.json(updatedNotification);
   });
+  
+  // Sync transactions from user's wallet
+  app.post('/api/sync-transactions', async (req, res) => {
+    try {
+      const { transactions, userId = 1 } = req.body;
+      
+      console.log('Received sync transactions request with data:', JSON.stringify(req.body));
+      
+      if (!Array.isArray(transactions)) {
+        console.error('Invalid request: transactions is not an array', req.body);
+        return res.status(400).json({ message: 'Transactions must be an array' });
+      }
+      
+      console.log(`Processing ${transactions.length} transactions`);
+      
+      const newTransactions = [];
+      for (const tx of transactions) {
+        console.log(`Processing transaction hash: ${tx.hash}`);
+        
+        // Check if transaction already exists
+        const existingTx = await storage.getTransactionByHash(tx.hash);
+        
+        if (existingTx) {
+          console.log(`Transaction ${tx.hash} already exists in database`);
+        } else {
+          // Add new transaction to our database
+          const transactionData = {
+            userId,
+            hash: tx.hash,
+            from: tx.from,
+            to: tx.to,
+            amount: tx.value,
+            timestamp: tx.timestamp,
+            currency: 'ETH',
+            category: null,
+            status: tx.status,
+            type: tx.type,
+          };
+          
+          console.log(`Adding new transaction:`, transactionData);
+          
+          try {
+            const newTx = await storage.createTransaction(transactionData);
+            console.log(`Transaction added successfully with ID: ${newTx.id}`);
+            newTransactions.push(newTx);
+          } catch (insertError) {
+            console.error(`Error adding transaction ${tx.hash}:`, insertError);
+          }
+        }
+      }
+      
+      console.log(`Sync complete. Added ${newTransactions.length} new transactions`);
+      
+      res.json({ 
+        success: true, 
+        message: `${newTransactions.length} new transactions synced`,
+        transactions: newTransactions
+      });
+    } catch (error) {
+      console.error('Error syncing transactions:', error);
+      res.status(500).json({ message: 'Failed to sync transactions', error: String(error) });
+    }
+  });
+  
+  // Test endpoint for direct Etherscan API access
+  app.get('/api/test-etherscan/:address', async (req, res) => {
+    try {
+      const address = req.params.address;
+      const apiKey = process.env.ETHERSCAN_API_KEY;
+      
+      if (!apiKey) {
+        return res.status(500).json({ error: 'Etherscan API key not configured' });
+      }
+      
+      console.log(`Testing Etherscan API for address: ${address}`);
+      
+      // Test mainnet
+      const mainnetUrl = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`;
+      
+      console.log(`Fetching from mainnet: ${mainnetUrl}`);
+      
+      const mainnetResponse = await fetch(mainnetUrl);
+      const mainnetData = await mainnetResponse.json();
+      
+      // Test Sepolia testnet
+      const sepoliaUrl = `https://api-sepolia.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`;
+      
+      console.log(`Fetching from Sepolia testnet: ${sepoliaUrl}`);
+      
+      const sepoliaResponse = await fetch(sepoliaUrl);
+      const sepoliaData = await sepoliaResponse.json();
+      
+      res.json({
+        status: 'success',
+        mainnet: {
+          status: mainnetData.status,
+          message: mainnetData.message,
+          resultCount: Array.isArray(mainnetData.result) ? mainnetData.result.length : 0,
+          sample: Array.isArray(mainnetData.result) && mainnetData.result.length > 0 ? mainnetData.result[0] : null
+        },
+        sepolia: {
+          status: sepoliaData.status,
+          message: sepoliaData.message,
+          resultCount: Array.isArray(sepoliaData.result) ? sepoliaData.result.length : 0,
+          sample: Array.isArray(sepoliaData.result) && sepoliaData.result.length > 0 ? sepoliaData.result[0] : null
+        }
+      });
+    } catch (error) {
+      console.error('Error testing Etherscan API:', error);
+      res.status(500).json({ error: String(error) });
+    }
+  });
 
   return httpServer;
 }
