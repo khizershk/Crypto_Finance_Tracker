@@ -1,7 +1,9 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { connectToDatabase } from "./db";
+import { connectToDatabase, connectToPgDatabase } from "./db";
+import { storage, initializeStorage } from "./storage";
+import { initializeDatabase } from "./initDb";
 
 const app = express();
 app.use(express.json());
@@ -39,11 +41,45 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
-    // Attempt to connect to MongoDB
-    const connected = await connectToDatabase();
+    // Attempt to connect to databases 
+    let connectedToMongo = false;
+    let connectedToPg = false;
     
-    // Only try to initialize MongoDB if the connection was successful
-    if (connected) {
+    // First try PostgreSQL (preferred)
+    try {
+      // Try to initialize PostgreSQL with schema
+      connectedToPg = await initializeDatabase();
+      if (connectedToPg) {
+        console.log("PostgreSQL database initialized successfully");
+      } else {
+        // Fallback to just connecting
+        connectedToPg = await connectToPgDatabase();
+        if (connectedToPg) {
+          console.log("Connected to PostgreSQL database");
+        }
+      }
+    } catch (error) {
+      console.error("Error connecting to PostgreSQL:", error);
+    }
+    
+    // If PostgreSQL fails, try MongoDB as fallback
+    if (!connectedToPg) {
+      try {
+        connectedToMongo = await connectToDatabase();
+        if (connectedToMongo) {
+          console.log("Using MongoDB database");
+        }
+      } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+      }
+    }
+    
+    // Initialize storage system
+    // Priority: PostgreSQL > MongoDB > in-memory
+    const storageType = connectedToPg ? 'postgres' : (connectedToMongo ? 'mongodb' : 'memory');
+    await initializeStorage(storageType);
+    
+    if (connectedToMongo && !connectedToPg) {
       try {
         console.log("Initializing MongoDB data...");
         // Create default user if it doesn't exist
@@ -60,10 +96,24 @@ app.use((req, res, next) => {
         }
       } catch (error) {
         console.error("Error initializing MongoDB data:", error);
-        // Continue without failing - we'll use in-memory storage as fallback
       }
-    } else {
+    } else if (!connectedToPg && !connectedToMongo) {
       console.log("Using in-memory storage as fallback");
+      
+      // Create default data in memory storage
+      try {
+        // Create default user
+        const defaultUser = await storage.getUserByUsername('user1');
+        if (!defaultUser) {
+          await storage.createUser({
+            username: 'user1',
+            password: 'password123'
+          });
+          console.log("Default user created in memory storage");
+        }
+      } catch (error) {
+        console.error("Error creating default data in memory storage:", error);
+      }
     }
     
     const server = await registerRoutes(app);

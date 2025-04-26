@@ -189,19 +189,33 @@ export class MemStorage implements IStorage {
 // Default to in-memory storage
 let storage: IStorage = new MemStorage();
 
-// Function to switch to MongoDB storage if available
-export async function initializeStorage(useMongoDb: boolean): Promise<IStorage> {
-  if (useMongoDb) {
-    try {
-      const { MongoDBStorage } = await import('./mongodb-storage');
-      storage = new MongoDBStorage();
-      console.log('Using MongoDB storage');
-    } catch (error) {
-      console.error('Failed to initialize MongoDB storage, falling back to in-memory storage:', error);
+// Function to choose appropriate storage implementation
+export async function initializeStorage(type: 'postgres' | 'mongodb' | 'memory'): Promise<IStorage> {
+  try {
+    if (type === 'postgres') {
+      try {
+        const { PostgresStorage } = await import('./postgres-storage');
+        storage = new PostgresStorage();
+        console.log('Using PostgreSQL storage');
+      } catch (error) {
+        console.error('Failed to initialize PostgreSQL storage, falling back to in-memory storage:', error);
+        storage = new MemStorage();
+      }
+    } else if (type === 'mongodb') {
+      try {
+        const { MongoDBStorage } = await import('./mongodb-storage');
+        storage = new MongoDBStorage();
+        console.log('Using MongoDB storage');
+      } catch (error) {
+        console.error('Failed to initialize MongoDB storage, falling back to in-memory storage:', error);
+        storage = new MemStorage();
+      }
+    } else {
+      console.log('Using in-memory storage');
       storage = new MemStorage();
     }
-  } else {
-    console.log('Using in-memory storage');
+  } catch (error) {
+    console.error('Error initializing storage:', error);
     storage = new MemStorage();
   }
   return storage;
