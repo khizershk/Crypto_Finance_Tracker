@@ -89,6 +89,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Transaction routes
+  // Get a transaction by hash - must come before the userId route to avoid conflicts
+  app.get('/api/transactions/hash/:hash', async (req, res) => {
+    const hash = req.params.hash;
+    const transaction = await storage.getTransactionByHash(hash);
+    
+    if (!transaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+    
+    res.json(transaction);
+  });
+
   app.get('/api/transactions', async (req, res) => {
     // Default route that works with the default query client
     const userId = req.query.userId ? parseInt(req.query.userId as string) : 1;

@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { useMetaMask } from '@/hooks/useMetaMask';
 import { WalletAlert } from '@/components/WalletAlert';
 import { TransactionList } from '@/components/TransactionList';
+import { SyncTransactionsButton } from '@/components/SyncTransactionsButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -66,7 +67,7 @@ export default function Transactions() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="w-full md:w-auto">
+                <div className="w-full md:w-auto flex gap-2">
                   <Button 
                     variant="outline"
                     className="w-full md:w-auto"
@@ -77,6 +78,7 @@ export default function Transactions() {
                   >
                     Clear Filters
                   </Button>
+                  {isConnected && <SyncTransactionsButton />}
                 </div>
               </div>
             </CardContent>

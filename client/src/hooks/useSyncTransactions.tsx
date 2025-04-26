@@ -80,7 +80,7 @@ export function useSyncTransactions(userId = 1) {
       toast({
         title: 'Transactions synced',
         description: `${newTxCount} new transactions found and synced from MetaMask`,
-        variant: newTxCount > 0 ? 'default' : 'secondary'
+        variant: newTxCount > 0 ? 'default' : undefined
       });
     } catch (error) {
       console.error('Error syncing transactions:', error);

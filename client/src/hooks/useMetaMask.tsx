@@ -114,6 +114,8 @@ export function useMetaMask() {
       const formattedTransactions = transactions.map(tx => {
         // Convert Wei to ETH (1 ETH = 10^18 Wei)
         const valueInEth = (parseInt(tx.value) / 1e18).toString();
+        // Safely handle null account state
+        const accountLower = state.account ? state.account.toLowerCase() : '';
         
         return {
           hash: tx.hash,
@@ -122,7 +124,7 @@ export function useMetaMask() {
           value: valueInEth,
           timestamp: new Date(parseInt(tx.timeStamp) * 1000).toISOString(),
           status: tx.txreceipt_status === '1' ? 'confirmed' : 'failed',
-          type: tx.from.toLowerCase() === state.account.toLowerCase() ? 'sent' : 'received'
+          type: tx.from.toLowerCase() === accountLower ? 'sent' : 'received'
         };
       });
       
