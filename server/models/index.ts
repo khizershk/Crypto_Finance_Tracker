@@ -15,7 +15,7 @@ export const User = mongoose.model<IUser>('User', UserSchema);
 
 // Budget model
 export interface IBudget extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: number;
   amount: number;
   periodStart: Date;
   periodEnd: Date;
@@ -23,7 +23,7 @@ export interface IBudget extends Document {
 }
 
 const BudgetSchema: Schema = new Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: Number, required: true },
   amount: { type: Number, required: true },
   periodStart: { type: Date, required: true },
   periodEnd: { type: Date, required: true },
@@ -34,7 +34,7 @@ export const Budget = mongoose.model<IBudget>('Budget', BudgetSchema);
 
 // Transaction model
 export interface ITransaction extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: number;
   hash: string;
   from: string;
   to: string;
@@ -47,7 +47,7 @@ export interface ITransaction extends Document {
 }
 
 const TransactionSchema: Schema = new Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: Number, required: true },
   hash: { type: String, required: true, unique: true },
   from: { type: String, required: true },
   to: { type: String, required: true },
@@ -63,14 +63,14 @@ export const Transaction = mongoose.model<ITransaction>('Transaction', Transacti
 
 // Notification model
 export interface INotification extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId: number;
   message: string;
   read: boolean;
   timestamp: Date;
 }
 
 const NotificationSchema: Schema = new Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: Number, required: true },
   message: { type: String, required: true },
   read: { type: Boolean, default: false, required: true },
   timestamp: { type: Date, default: Date.now, required: true },

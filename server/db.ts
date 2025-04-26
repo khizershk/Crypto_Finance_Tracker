@@ -20,9 +20,8 @@ export const connectToDatabase = async () => {
     // Set a reasonable timeout to avoid hanging
     await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 5000, // 5 seconds
-      connectTimeoutMS: 10000, // 10 seconds
-      useNewUrlParser: true,
-      useUnifiedTopology: true
+      connectTimeoutMS: 10000 // 10 seconds
+      // Note: useNewUrlParser and useUnifiedTopology are now default in newer Mongoose versions
     });
     
     console.log('Connected to MongoDB successfully');
