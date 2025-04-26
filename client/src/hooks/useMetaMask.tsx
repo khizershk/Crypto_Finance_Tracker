@@ -69,37 +69,65 @@ export function useMetaMask() {
 
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
-      
       console.log('Fetching transaction history for account:', state.account);
       
-      // Get transactions sent by the user - using eth_getTransactionsByAddress RPC call
-      // ethers.js doesn't have a getHistory method on BrowserProvider, so we use a different approach
-      const blockNumber = await provider.getBlockNumber();
-      console.log('Current block number:', blockNumber);
+      const network = await provider.getNetwork();
+      const chainName = network.name === 'homestead' ? 'mainnet' : network.name;
+      console.log('Current network:', chainName);
       
-      // Sample transactions for testing when we can't get them from MetaMask
-      // In a production app, you would need to use Etherscan API or a similar service
-      const mockTransactions = [
-        {
-          hash: '0x' + Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2),
-          from: state.account,
-          to: '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b',
-          value: '0.05',
-          timestamp: new Date().toISOString(),
-          status: 'confirmed'
-        },
-        {
-          hash: '0x' + Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2),
-          from: '0x7f1531b6b88f880761c3c1ec478c11e8211994e2',
-          to: state.account,
-          value: '0.1',
-          timestamp: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-          status: 'confirmed'
-        }
-      ];
+      // Using Etherscan API to get real transaction history
+      const apiKey = import.meta.env.ETHERSCAN_API_KEY || process.env.ETHERSCAN_API_KEY;
+      if (!apiKey) {
+        console.error('Etherscan API key not found');
+        throw new Error('Etherscan API key not found');
+      }
       
-      console.log('Formatted transactions:', mockTransactions);
-      return mockTransactions;
+      // Determine the correct Etherscan API URL based on the network
+      let baseUrl = 'https://api.etherscan.io/api';
+      if (chainName === 'sepolia') {
+        baseUrl = 'https://api-sepolia.etherscan.io/api';
+      } else if (chainName === 'goerli') {
+        baseUrl = 'https://api-goerli.etherscan.io/api';
+      }
+      
+      // Fetch both normal transactions and internal transactions
+      const url = `${baseUrl}?module=account&action=txlist&address=${state.account}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`;
+      console.log('Fetching transactions from Etherscan');
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.status !== '1' && data.message !== 'No transactions found') {
+        console.error('Etherscan API error:', data);
+        throw new Error(`Etherscan API error: ${data.message}`);
+      }
+      
+      // Internal transactions (like contract interactions)
+      const internalUrl = `${baseUrl}?module=account&action=txlistinternal&address=${state.account}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`;
+      const internalResponse = await fetch(internalUrl);
+      const internalData = await internalResponse.json();
+      
+      // Combine both transaction types
+      const transactions = [...(data.result || []), ...(internalData.status === '1' ? internalData.result : [])];
+      
+      // Format the transactions to match our application's format
+      const formattedTransactions = transactions.map(tx => {
+        // Convert Wei to ETH (1 ETH = 10^18 Wei)
+        const valueInEth = (parseInt(tx.value) / 1e18).toString();
+        
+        return {
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          value: valueInEth,
+          timestamp: new Date(parseInt(tx.timeStamp) * 1000).toISOString(),
+          status: tx.txreceipt_status === '1' ? 'confirmed' : 'failed',
+          type: tx.from.toLowerCase() === state.account.toLowerCase() ? 'sent' : 'received'
+        };
+      });
+      
+      console.log('Fetched transactions from Etherscan:', formattedTransactions.length);
+      return formattedTransactions.slice(0, 10); // Limit to 10 most recent transactions
     } catch (error) {
       console.error('Error fetching transaction history:', error);
       setState(prevState => ({
