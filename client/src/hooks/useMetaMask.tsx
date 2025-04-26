@@ -123,25 +123,49 @@ export function useMetaMask() {
       const transactions = [...(data.result || []), ...(internalData.status === '1' ? internalData.result : [])];
       
       // Format the transactions to match our application's format
-      const formattedTransactions = transactions.map(tx => {
-        // Convert Wei to ETH (1 ETH = 10^18 Wei)
-        const valueInEth = (parseInt(tx.value) / 1e18).toString();
-        // Safely handle null account state
-        const accountLower = state.account ? state.account.toLowerCase() : '';
-        
-        return {
-          hash: tx.hash,
-          from: tx.from,
-          to: tx.to,
-          value: valueInEth,
-          timestamp: new Date(parseInt(tx.timeStamp) * 1000).toISOString(),
-          status: tx.txreceipt_status === '1' ? 'confirmed' : 'failed',
-          type: tx.from.toLowerCase() === accountLower ? 'sent' : 'received'
-        };
-      });
+      const formattedTransactions = [];
+      
+      // Process each transaction with error handling
+      for (const tx of transactions) {
+        try {
+          if (!tx.hash) {
+            console.warn('Skipping transaction with no hash:', tx);
+            continue;
+          }
+          
+          // Convert Wei to ETH (1 ETH = 10^18 Wei)
+          let valueInEth = "0";
+          try {
+            // Use parseFloat for better decimal handling
+            valueInEth = (parseFloat(tx.value) / 1e18).toString();
+          } catch (e) {
+            console.warn(`Error converting value for tx ${tx.hash}:`, e);
+          }
+          
+          // Safely handle null account state
+          const accountLower = state.account ? state.account.toLowerCase() : '';
+          
+          // Use default values for missing fields
+          const formattedTx = {
+            hash: tx.hash,
+            from: tx.from || '0x0000000000000000000000000000000000000000',
+            to: tx.to || '0x0000000000000000000000000000000000000000',
+            value: valueInEth,
+            timestamp: tx.timeStamp ? new Date(parseInt(tx.timeStamp) * 1000).toISOString() : new Date().toISOString(),
+            status: tx.txreceipt_status === '1' ? 'confirmed' : 'failed',
+            type: tx.from && tx.from.toLowerCase() === accountLower ? 'sent' : 'received'
+          };
+          
+          formattedTransactions.push(formattedTx);
+        } catch (txError) {
+          console.error('Error processing transaction:', tx, txError);
+        }
+      }
       
       console.log('Fetched transactions from Etherscan:', formattedTransactions.length);
-      return formattedTransactions.slice(0, 10); // Limit to 10 most recent transactions
+      
+      // If we have many transactions, just return the most recent ones
+      return formattedTransactions.slice(0, 20); // Return up to 20 transactions
     } catch (error) {
       console.error('Error fetching transaction history:', error);
       setState(prevState => ({

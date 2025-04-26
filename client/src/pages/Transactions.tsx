@@ -5,6 +5,7 @@ import { useMetaMask } from '@/hooks/useMetaMask';
 import { WalletAlert } from '@/components/WalletAlert';
 import { TransactionList } from '@/components/TransactionList';
 import { SyncTransactionsButton } from '@/components/SyncTransactionsButton';
+import { DiagnosticButton } from '@/components/DiagnosticButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -78,7 +79,12 @@ export default function Transactions() {
                   >
                     Clear Filters
                   </Button>
-                  {isConnected && <SyncTransactionsButton />}
+                  {isConnected && (
+                    <>
+                      <SyncTransactionsButton />
+                      <DiagnosticButton />
+                    </>
+                  )}
                 </div>
               </div>
             </CardContent>

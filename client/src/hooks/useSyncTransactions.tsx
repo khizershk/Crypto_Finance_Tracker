@@ -60,14 +60,11 @@ export function useSyncTransactions(userId = 1) {
 
     setIsSyncing(true);
     try {
+      // Fetch transactions from MetaMask/Etherscan
+      console.log('Fetching transaction history from wallet...');
       const transactions = await fetchTransactionHistory();
       console.log('Transactions from MetaMask:', transactions);
 
-      let newTxCount = 0;
-      
-      // Process each transaction
-      console.log('Number of transactions to process:', transactions.length);
-      
       if (transactions.length === 0) {
         console.log('No transactions found in MetaMask history');
         toast({
@@ -75,43 +72,54 @@ export function useSyncTransactions(userId = 1) {
           description: 'No transactions were found in your MetaMask history. Have you made any transactions on this network?',
           variant: 'destructive'
         });
+        setIsSyncing(false);
+        return;
       }
       
-      for (const tx of transactions) {
-        console.log('Processing transaction:', tx.hash);
-        // Check if transaction already exists in our database
-        const existingTx = await fetchTransactionByHash(tx.hash);
-        console.log('Existing transaction check:', existingTx ? 'Found' : 'Not found');
-        
-        if (!existingTx) {
-          try {
-            // Add new transaction to our database
-            console.log('Adding transaction to database:', tx);
-            const result = await addTransaction.mutateAsync(tx);
-            console.log('Transaction added successfully:', result);
-            newTxCount++;
-          } catch (err) {
-            console.error('Error adding transaction:', err);
-          }
-        }
+      console.log(`Found ${transactions.length} transactions to sync`);
+      
+      // Use the server-side sync endpoint to process transactions in bulk
+      const syncResponse = await fetch('/api/sync-transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          transactions,
+          userId
+        }),
+      });
+      
+      if (!syncResponse.ok) {
+        const errorData = await syncResponse.json();
+        console.error('Sync API error:', errorData);
+        throw new Error(errorData.message || 'Failed to sync transactions');
       }
       
+      const syncResult = await syncResponse.json();
+      console.log('Sync result:', syncResult);
+      
+      // Invalidate queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['/api/transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categorized-transactions'] });
+      
+      // Show success message
       toast({
         title: 'Transactions synced',
-        description: `${newTxCount} new transactions found and synced from MetaMask`,
-        variant: newTxCount > 0 ? 'default' : undefined
+        description: syncResult.message || `${syncResult.transactions?.length || 0} new transactions synced`,
+        variant: (syncResult.transactions?.length || 0) > 0 ? 'default' : undefined
       });
     } catch (error) {
       console.error('Error syncing transactions:', error);
       toast({
         title: 'Sync failed',
-        description: 'Failed to sync transactions from MetaMask',
+        description: error instanceof Error ? error.message : 'Failed to sync transactions from MetaMask',
         variant: 'destructive'
       });
     } finally {
       setIsSyncing(false);
     }
-  }, [account, fetchTransactionHistory, addTransaction, fetchTransactionByHash, toast]);
+  }, [account, fetchTransactionHistory, toast, userId, queryClient]);
 
   return {
     syncTransactions,
