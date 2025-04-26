@@ -107,7 +107,12 @@ export class MemStorage implements IStorage {
   
   async createTransaction(insertTransaction: InsertTransaction): Promise<Transaction> {
     const id = this.nextTransactionId++;
-    const transaction: Transaction = { ...insertTransaction, id };
+    // Ensure category is at least null if not provided
+    const transaction: Transaction = { 
+      ...insertTransaction, 
+      id,
+      category: insertTransaction.category || null 
+    };
     this.transactions.set(id, transaction);
     return transaction;
   }
