@@ -131,8 +131,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Creating new transaction with data:', JSON.stringify(req.body));
       
-      // Validate the transaction data
-      const transactionData = insertTransactionSchema.parse(req.body);
+      // Prepare the transaction data with proper date type for timestamp
+      const rawData = req.body;
+      
+      // Convert string timestamp to Date object if it's a string
+      if (rawData.timestamp && typeof rawData.timestamp === 'string') {
+        rawData.timestamp = new Date(rawData.timestamp);
+      }
+      
+      // Validate the transaction data after conversion
+      const transactionData = insertTransactionSchema.parse(rawData);
       console.log('Transaction data parsed successfully');
       
       // Check if transaction already exists
@@ -293,7 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             from: tx.from,
             to: tx.to,
             amount: tx.value,
-            timestamp: tx.timestamp,
+            timestamp: new Date(tx.timestamp), // Convert string timestamp to Date object
             currency: 'ETH',
             category: null,
             status: tx.status,
