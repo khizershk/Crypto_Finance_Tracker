@@ -6,30 +6,9 @@ import * as schema from '@shared/schema';
 
 // Connect to MongoDB and export the connection (legacy)
 export const connectToDatabase = async () => {
-  try {
-    if (!process.env.MONGODB_URI) {
-      console.warn('MONGODB_URI environment variable is not defined, skipping MongoDB connection');
-      return false; // Return false to indicate connection was not established
-    }
-    
-    // Fix for TypeScript string vs undefined issue
-    const mongoUri: string = process.env.MONGODB_URI;
-    
-    console.log('Attempting to connect to MongoDB with URI:', mongoUri.replace(/:([^:@]+)@/, ':****@')); // Log the URI (with password hidden)
-    
-    // Set a reasonable timeout to avoid hanging
-    await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000, // 5 seconds
-      connectTimeoutMS: 10000 // 10 seconds
-      // Note: useNewUrlParser and useUnifiedTopology are now default in newer Mongoose versions
-    });
-    
-    console.log('Connected to MongoDB successfully');
-    return true; // Return true to indicate successful connection
-  } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
-    return false; // Return false to indicate connection failed
-  }
+  // Skip MongoDB connection - we're using persistent storage
+  console.log('Skipping MongoDB connection - using persistent file storage');
+  return false; // Return false to indicate connection was not established
 };
 
 export const mongoDb = mongoose.connection;
@@ -42,30 +21,9 @@ mongoDb.once('open', () => {
 
 // PostgreSQL connection with Drizzle
 export const connectToPgDatabase = async () => {
-  try {
-    if (!process.env.DATABASE_URL) {
-      console.warn('DATABASE_URL environment variable is not defined, skipping PostgreSQL connection');
-      return false;
-    }
-    
-    console.log('Connecting to PostgreSQL...');
-    // Pool will be created and connections validated
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      max: 10,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
-    });
-    
-    // Test if the connection works
-    await pool.query('SELECT NOW()');
-    
-    console.log('Connected to PostgreSQL successfully');
-    return true;
-  } catch (error) {
-    console.error('Failed to connect to PostgreSQL:', error);
-    return false;
-  }
+  // Skip PostgreSQL connection attempt - we're using persistent storage
+  console.log('Skipping PostgreSQL connection - using persistent file storage');
+  return false;
 };
 
 // Create the PostgreSQL pool and Drizzle DB instance

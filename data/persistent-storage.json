@@ -1,0 +1,12 @@
+{
+  "users": {
+    "1": {
+      "username": "user1",
+      "password": "password123",
+      "id": 1
+    }
+  },
+  "budgets": {},
+  "transactions": {},
+  "notifications": {}
+}

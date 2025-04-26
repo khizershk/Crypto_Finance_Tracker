@@ -73,45 +73,33 @@ app.use((req, res, next) => {
     }
     
     // Initialize storage system
-    // Priority: MongoDB > PostgreSQL > persistent-memory
-    const storageType = connectedToMongo ? 'mongodb' : (connectedToPg ? 'postgres' : 'persistent-memory');
+    // Priority: Persistent Memory > MongoDB > PostgreSQL
+    // We're using persistent memory storage as our primary storage solution
+    // (works like a NoSQL database by persisting data to disk with automatic backups)
+    const storageType = 'persistent-memory';
     await initializeStorage(storageType);
     
-    if (connectedToMongo && !connectedToPg) {
-      try {
-        console.log("Initializing MongoDB data...");
-        // Create default user if it doesn't exist
-        const { User } = require('./models');
-        const defaultUser = await User.findOne({ username: 'user1' });
-        if (!defaultUser) {
-          console.log("Creating default user...");
-          const newUser = new User({
-            username: 'user1',
-            password: 'password123'
-          });
-          await newUser.save();
-          console.log("Default user created successfully");
-        }
-      } catch (error) {
-        console.error("Error initializing MongoDB data:", error);
+    console.log("*********************************************");
+    console.log("* Using persistent file storage as main database *");
+    console.log("* Data will be automatically saved to disk      *");
+    console.log("* and loaded on application restart             *");
+    console.log("*********************************************");
+
+    // Ensure default user exists in storage
+    try {
+      // Create default user if it doesn't exist
+      const defaultUser = await storage.getUserByUsername('user1');
+      if (!defaultUser) {
+        await storage.createUser({
+          username: 'user1',
+          password: 'password123'
+        });
+        console.log("Default user created in persistent storage");
+      } else {
+        console.log("Default user found in persistent storage");
       }
-    } else if (!connectedToPg && !connectedToMongo) {
-      console.log("Using in-memory storage as fallback");
-      
-      // Create default data in memory storage
-      try {
-        // Create default user
-        const defaultUser = await storage.getUserByUsername('user1');
-        if (!defaultUser) {
-          await storage.createUser({
-            username: 'user1',
-            password: 'password123'
-          });
-          console.log("Default user created in memory storage");
-        }
-      } catch (error) {
-        console.error("Error creating default data in memory storage:", error);
-      }
+    } catch (error) {
+      console.error("Error creating default data:", error);
     }
     
     const server = await registerRoutes(app);
