@@ -66,14 +66,33 @@ export function useSyncTransactions(userId = 1) {
       let newTxCount = 0;
       
       // Process each transaction
+      console.log('Number of transactions to process:', transactions.length);
+      
+      if (transactions.length === 0) {
+        console.log('No transactions found in MetaMask history');
+        toast({
+          title: 'No transactions found',
+          description: 'No transactions were found in your MetaMask history. Have you made any transactions on this network?',
+          variant: 'destructive'
+        });
+      }
+      
       for (const tx of transactions) {
+        console.log('Processing transaction:', tx.hash);
         // Check if transaction already exists in our database
         const existingTx = await fetchTransactionByHash(tx.hash);
+        console.log('Existing transaction check:', existingTx ? 'Found' : 'Not found');
         
         if (!existingTx) {
-          // Add new transaction to our database
-          await addTransaction.mutateAsync(tx);
-          newTxCount++;
+          try {
+            // Add new transaction to our database
+            console.log('Adding transaction to database:', tx);
+            const result = await addTransaction.mutateAsync(tx);
+            console.log('Transaction added successfully:', result);
+            newTxCount++;
+          } catch (err) {
+            console.error('Error adding transaction:', err);
+          }
         }
       }
       

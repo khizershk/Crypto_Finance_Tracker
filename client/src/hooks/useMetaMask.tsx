@@ -76,7 +76,10 @@ export function useMetaMask() {
       console.log('Current network:', chainName);
       
       // Using Etherscan API to get real transaction history
-      const apiKey = import.meta.env.ETHERSCAN_API_KEY || process.env.ETHERSCAN_API_KEY;
+      // Access the environment variable from Vite
+      const apiKey = import.meta.env.VITE_ETHERSCAN_API_KEY;
+      console.log('Using Etherscan API with key available:', apiKey ? 'Yes' : 'No');
+      
       if (!apiKey) {
         console.error('Etherscan API key not found');
         throw new Error('Etherscan API key not found');
@@ -84,10 +87,19 @@ export function useMetaMask() {
       
       // Determine the correct Etherscan API URL based on the network
       let baseUrl = 'https://api.etherscan.io/api';
-      if (chainName === 'sepolia') {
+      
+      // Log the chainId to help debug
+      console.log('Chain ID:', state.chainId);
+      
+      // Check network by chainId (more reliable than name)
+      if (chainName === 'sepolia' || state.chainId === '11155111') {
         baseUrl = 'https://api-sepolia.etherscan.io/api';
-      } else if (chainName === 'goerli') {
+        console.log('Using Sepolia network API');
+      } else if (chainName === 'goerli' || state.chainId === '5') {
         baseUrl = 'https://api-goerli.etherscan.io/api';
+        console.log('Using Goerli network API');
+      } else {
+        console.log('Using Mainnet API');
       }
       
       // Fetch both normal transactions and internal transactions

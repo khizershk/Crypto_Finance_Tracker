@@ -91,14 +91,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Transaction routes
   // Get a transaction by hash - must come before the userId route to avoid conflicts
   app.get('/api/transactions/hash/:hash', async (req, res) => {
-    const hash = req.params.hash;
-    const transaction = await storage.getTransactionByHash(hash);
-    
-    if (!transaction) {
-      return res.status(404).json({ message: 'Transaction not found' });
+    try {
+      const hash = req.params.hash;
+      console.log(`Looking up transaction with hash: ${hash}`);
+      
+      const transaction = await storage.getTransactionByHash(hash);
+      
+      if (!transaction) {
+        console.log(`Transaction with hash ${hash} not found`);
+        return res.status(404).json({ message: 'Transaction not found' });
+      }
+      
+      console.log(`Found transaction:`, transaction);
+      res.json(transaction);
+    } catch (error) {
+      console.error('Error fetching transaction by hash:', error);
+      res.status(500).json({ message: 'Error fetching transaction', error: String(error) });
     }
-    
-    res.json(transaction);
   });
 
   app.get('/api/transactions', async (req, res) => {
@@ -120,49 +129,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/transactions', async (req, res) => {
     try {
+      console.log('Creating new transaction with data:', JSON.stringify(req.body));
+      
+      // Validate the transaction data
       const transactionData = insertTransactionSchema.parse(req.body);
+      console.log('Transaction data parsed successfully');
       
       // Check if transaction already exists
+      console.log('Checking if transaction already exists with hash:', transactionData.hash);
       const existingTransaction = await storage.getTransactionByHash(transactionData.hash);
+      
       if (existingTransaction) {
+        console.log('Transaction already exists in database:', existingTransaction);
         return res.status(409).json({ message: 'Transaction already exists' });
       }
       
+      console.log('Transaction is new, proceeding with creation');
       const newTransaction = await storage.createTransaction(transactionData);
+      console.log('Transaction created successfully:', newTransaction);
       
       // Check if this transaction makes the user exceed their budget
       const userId = transactionData.userId;
+      console.log(`Checking budget for user ${userId}`);
       const budget = await storage.getBudget(userId);
       
       if (budget) {
+        console.log('User has a budget:', budget);
         const transactions = await storage.getTransactions(userId);
+        
         const periodTransactions = transactions.filter(
           (tx: any) => new Date(tx.timestamp) >= new Date(budget.periodStart) && 
                 new Date(tx.timestamp) <= new Date(budget.periodEnd) &&
                 tx.type === 'sent'
         );
         
+        console.log(`Found ${periodTransactions.length} transactions in budget period`);
+        
         const totalSpent = periodTransactions.reduce(
           (sum: number, tx: any) => sum + Number(tx.amount), 0
         );
         
+        console.log(`Total spent: ${totalSpent}, Budget: ${budget.amount}`);
+        
         if (totalSpent > Number(budget.amount)) {
+          console.log('Budget exceeded, creating notification');
           // Create budget notification
           await storage.createNotification({
             userId,
             message: 'You have exceeded your budget for this period!',
             timestamp: new Date(),
           });
+          console.log('Budget notification created');
         }
+      } else {
+        console.log('User has no budget set');
       }
       
       res.status(201).json(newTransaction);
     } catch (error) {
+      console.error('Error creating transaction:', error);
+      
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
-        return res.status(400).json({ message: validationError.message });
+        console.error('Validation error:', validationError);
+        return res.status(400).json({ 
+          message: 'Transaction data validation failed', 
+          details: validationError.message 
+        });
       }
-      res.status(500).json({ message: 'Failed to create transaction' });
+      
+      res.status(500).json({ 
+        message: 'Failed to create transaction',
+        error: String(error)
+      });
     }
   });
 
