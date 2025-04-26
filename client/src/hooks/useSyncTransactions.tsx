@@ -36,7 +36,7 @@ export function useSyncTransactions(userId = 1) {
   // Fetch a transaction by hash from the database
   const fetchTransactionByHash = useCallback(async (hash: string) => {
     try {
-      const response = await fetch(`/api/transactions/${hash}`);
+      const response = await fetch(`/api/transactions/hash/${hash}`);
       if (!response.ok) {
         return null;
       }
