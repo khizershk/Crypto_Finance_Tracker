@@ -4,6 +4,11 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUser extends Document {
   username: string;
   password: string;
+  preferences?: {
+    theme?: 'light' | 'dark';
+    notifications?: boolean;
+    currency?: string;
+  };
 }
 
 const UserSchema: Schema = new Schema({
@@ -20,14 +25,25 @@ export interface IBudget extends Document {
   periodStart: Date;
   periodEnd: Date;
   currency: string;
+  spent: number;
+  warnThreshold: number;
 }
 
 const BudgetSchema: Schema = new Schema({
-  userId: { type: Number, required: true },
-  amount: { type: Number, required: true },
+  userId: { 
+    type: Number, 
+    required: true,
+    min: [1, 'User ID must be greater than 0']
+  },
+  amount: { 
+    type: Number, 
+    required: true,
+    get: (v: number) => parseFloat(v.toString()),
+    set: (v: number) => parseFloat(v.toString())
+  },
   periodStart: { type: Date, required: true },
   periodEnd: { type: Date, required: true },
-  currency: { type: String, required: true },
+  currency: { type: String, required: true }
 });
 
 export const Budget = mongoose.model<IBudget>('Budget', BudgetSchema);
@@ -44,6 +60,7 @@ export interface ITransaction extends Document {
   category?: string;
   status: string;
   type: string;
+  transactionType: 'sent' | 'received';
 }
 
 const TransactionSchema: Schema = new Schema({

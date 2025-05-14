@@ -20,7 +20,12 @@ export class MongoDBStorage implements IStorage {
     return {
       id: parseInt(user._id?.toString() || '0', 10),
       username: user.username,
-      password: user.password
+      password: user.password,
+      preferences: {
+        theme: user.preferences?.theme || 'light',
+        notifications: user.preferences?.notifications || true,
+        currency: user.preferences?.currency || 'ETH'
+      }
     };
   }
 
@@ -203,6 +208,35 @@ export class MongoDBStorage implements IStorage {
       });
       
       await transaction.save();
+
+      // Check budget and create notification if needed
+      if (transaction.transactionType === 'sent') {
+        const budget = await Budget.findOne({ userId: user._id });
+        if (budget) {
+          // Update spent amount
+          budget.spent += transaction.amount;
+          await budget.save();
+
+          // Check if budget threshold is exceeded
+          const spentPercentage = (budget.spent / budget.amount) * 100;
+          if (spentPercentage >= budget.warnThreshold) {
+            // Create budget warning notification
+            const notification = new Notification({
+              userId: user._id,
+              notificationType: 'budget_warning',
+              message: `You have used ${spentPercentage.toFixed(1)}% of your budget for this period.`,
+              metadata: {
+                budgetId: budget._id,
+                spentAmount: budget.spent,
+                totalBudget: budget.amount,
+                percentage: spentPercentage
+              }
+            });
+            await notification.save();
+          }
+        }
+      }
+
       return this.convertTransaction(transaction);
     } catch (error) {
       console.error('Error creating transaction:', error);
@@ -279,6 +313,23 @@ export class MongoDBStorage implements IStorage {
       return this.convertNotification(notification);
     } catch (error) {
       console.error('Error marking notification as read:', error);
+      return undefined;
+    }
+  }
+
+  async updateUserPreferences(userId: number, preferences: IUser['preferences']): Promise<UserType | undefined> {
+    try {
+      // Find the user first to get MongoDB ObjectId
+      const user = await User.findOne({}).sort({ _id: 1 }).skip(userId - 1);
+      if (!user) return undefined;
+
+      // Update user preferences
+      user.preferences = preferences;
+      await user.save();
+      
+      return this.convertUser(user);
+    } catch (error) {
+      console.error('Error updating user preferences:', error);
       return undefined;
     }
   }

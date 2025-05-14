@@ -10,6 +10,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserPreferences(userId: number, preferences: User['preferences']): Promise<User | undefined>;
   
   // Budget operations
   getBudget(userId: number): Promise<Budget | undefined>;
@@ -64,9 +65,26 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.nextUserId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      preferences: {
+        theme: 'light',
+        notifications: true,
+        currency: 'ETH'
+      }
+    };
     this.users.set(id, user);
     return user;
+  }
+
+  async updateUserPreferences(userId: number, preferences: User['preferences']): Promise<User | undefined> {
+    const user = await this.getUser(userId);
+    if (!user) return undefined;
+    
+    const updatedUser: User = { ...user, preferences };
+    this.users.set(userId, updatedUser);
+    return updatedUser;
   }
   
   // Budget methods
@@ -299,36 +317,19 @@ export class PersistentMemStorage extends MemStorage {
 let storage: IStorage = new PersistentMemStorage();
 
 // Function to choose appropriate storage implementation
-export async function initializeStorage(type: 'postgres' | 'mongodb' | 'memory' | 'persistent-memory'): Promise<IStorage> {
-  try {
-    if (type === 'postgres') {
-      try {
-        const { PostgresStorage } = await import('./postgres-storage');
-        storage = new PostgresStorage();
-        console.log('Using PostgreSQL storage');
-      } catch (error) {
-        console.error('Failed to initialize PostgreSQL storage, falling back to persistent memory storage:', error);
-        storage = new PersistentMemStorage();
-      }
-    } else if (type === 'mongodb') {
-      try {
-        const { MongoDBStorage } = await import('./mongodb-storage');
-        storage = new MongoDBStorage();
-        console.log('Using MongoDB storage');
-      } catch (error) {
-        console.error('Failed to initialize MongoDB storage, falling back to persistent memory storage:', error);
-        storage = new PersistentMemStorage();
-      }
-    } else if (type === 'memory') {
-      console.log('Using regular in-memory storage (data will be lost on restart)');
-      storage = new MemStorage();
-    } else {
-      console.log('Using persistent memory storage');
+export async function initializeStorage(storageType: string = 'mongodb'): Promise<IStorage> {
+  switch (storageType) {
+    case 'persistent-memory':
       storage = new PersistentMemStorage();
-    }
-  } catch (error) {
-    console.error('Error initializing storage:', error);
-    storage = new MemStorage();
+      console.log('Using persistent memory storage');
+      break;
+    case 'mongodb':
+      const { MongoDBStorage } = await import('./mongodb-storage');
+      storage = new MongoDBStorage();
+      console.log('Using MongoDB storage');
+      break;
+    default:
+      throw new Error(`Unsupported storage type: ${storageType}`);
   }
   return storage;
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { MetaMaskConnect } from '@/components/MetaMaskConnect';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,14 @@ interface HeaderProps {
 
 export function Header({ showSidebar, toggleSidebar }: HeaderProps) {
   const [location] = useLocation();
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check if dark mode was previously enabled
+    if (typeof window !== 'undefined') {
+      const isDark = document.documentElement.classList.contains('dark');
+      return isDark;
+    }
+    return false;
+  });
 
   const getPageTitle = (path: string) => {
     switch (path) {
@@ -32,12 +39,26 @@ export function Header({ showSidebar, toggleSidebar }: HeaderProps) {
   };
 
   const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
     document.documentElement.classList.toggle('dark');
-    setDarkMode(!darkMode);
+    setDarkMode(newDarkMode);
+    // Persist the dark mode preference
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('darkMode', newDarkMode ? 'dark' : 'light');
+    }
   };
 
+  // Initialize dark mode from localStorage on component mount
+  React.useEffect(() => {
+    const savedTheme = localStorage.getItem('darkMode');
+    if (savedTheme === 'dark' && !document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.add('dark');
+      setDarkMode(true);
+    }
+  }, []);
+
   return (
-    <header className="bg-white border-b border-slate-200">
+    <header className="bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700">
       <div className="flex items-center justify-between h-16 px-4 lg:px-6">
         <div className="flex items-center">
           <Button 

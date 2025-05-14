@@ -6,7 +6,926 @@
       "id": 1
     }
   },
-  "budgets": {},
-  "transactions": {},
-  "notifications": {}
+  "budgets": {
+    "2": {
+      "userId": 1,
+      "amount": "0.35",
+      "periodStart": "2025-05-01T00:00:00.000Z",
+      "periodEnd": "2025-05-31T23:59:59.000Z",
+      "currency": "USD",
+      "id": 2
+    }
+  },
+  "transactions": {
+    "2": {
+      "userId": 1,
+      "hash": "0x9867069e12799829eb23a05ed22e4f086457919b97aff724838983f71204f5dc",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.00515",
+      "timestamp": "2025-04-26T15:57:36.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 2
+    },
+    "3": {
+      "userId": 1,
+      "hash": "0x3d4efe13c5ab19b2409682859fbaa0b3e4cfe4717cadc72c2a4b30c529ebee93",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.003356",
+      "timestamp": "2025-04-26T14:28:24.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 3
+    },
+    "4": {
+      "userId": 1,
+      "hash": "0xd673478106e2d669c258ec6202b16391fe6151967dce6397ce63a56fb34516d0",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.019167194322338",
+      "timestamp": "2025-04-26T14:20:12.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 4
+    },
+    "5": {
+      "userId": 1,
+      "hash": "0x7cb312bc930b5f11c9be30cd0523a72e1053e81692ae9bcbf8bd47e589b688b4",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.018512323025914247",
+      "timestamp": "2025-04-26T11:55:48.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 5
+    },
+    "6": {
+      "userId": 1,
+      "hash": "0x872523f99de8c31ccf8ec6727bc1bb18cfac2b17f9072a75cad1dfb4132fe42f",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0x0000000000000000000000000000000000000000",
+      "amount": "0",
+      "timestamp": "2025-04-25T19:57:36.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 6
+    },
+    "7": {
+      "userId": 1,
+      "hash": "0x6f87abd3150a0a863f57ab6e490dcd2b09de8d5654d6ccdc8e20d784b2e2706b",
+      "from": "0x9484449f2be7cd6e01ef55bc5438c733e0759e0f",
+      "to": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "amount": "0.05",
+      "timestamp": "2025-04-25T08:43:24.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 7
+    },
+    "8": {
+      "userId": 1,
+      "hash": "0xf52ca1bb2bf49b9e571f7a4c730c5c2aa9bd863ee9e0f108fd755d04feb324f8",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-04-30T07:50:48.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 8
+    },
+    "9": {
+      "userId": 1,
+      "hash": "0x0803fcc531f8ccdc0ba9145426ff58adc84db05466bb9ab3533f7aaa334bffa2",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-04-30T07:34:24.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 9
+    },
+    "10": {
+      "userId": 1,
+      "hash": "0x3eaa584ed894bc7372b2fc81be0870d90976893cec70bb228ad42a63d55bf105",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.010036694825479",
+      "timestamp": "2025-04-27T15:54:24.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 10
+    },
+    "11": {
+      "userId": 1,
+      "hash": "0x5e350901a6463a7c1c4bb7957567f24dbe00703ec383bbda72303290303039d4",
+      "from": "0x6efb29cee3b414272eb7a8f3ebabf873d36bc033",
+      "to": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "amount": "0.05",
+      "timestamp": "2025-04-28T07:02:36.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 11
+    },
+    "12": {
+      "userId": 1,
+      "hash": "0x3c840cdf046a251d0c1ecdf2185195d3abea20182196454361f957f2ac07e06e",
+      "from": "0xcbf16fed20967280a8b53299dc7dd6bd857d7e9c",
+      "to": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "amount": "0.05",
+      "timestamp": "2025-04-26T16:45:36.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 12
+    },
+    "13": {
+      "userId": 1,
+      "hash": "0x6191ffb819e63474d2fa0f8599eef145c5e653d9d87be5f250c828c6d6ef49b5",
+      "from": "0x52f1984cd3e46e1214db222d3ff63712e7aceedd",
+      "to": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "amount": "0.05",
+      "timestamp": "2025-04-30T08:04:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 13
+    },
+    "14": {
+      "userId": 1,
+      "hash": "0x4626895340df13055448f8b8bb354a3994630d7b3e5eb0e866a763cb5e452ac3",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-04-30T08:06:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 14
+    },
+    "15": {
+      "userId": 1,
+      "hash": "0x8795738c279e328b03766fc91c7d1bcb5a27a0dff53fa3a639c8ccff07c6cc7b",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.1",
+      "timestamp": "2025-04-30T13:26:36.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 15
+    },
+    "16": {
+      "userId": 1,
+      "hash": "0x19e16e9031fccbd94d6a03d7bbac8d1d9d363bcd1ebb8d775d60f985306b0327",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.02",
+      "timestamp": "2025-05-08T11:35:48.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 16
+    },
+    "17": {
+      "userId": 1,
+      "hash": "0x4ca6ec9d6a38c461a7447a03fd2913e17df4500e89a10702c26a876aad17d94a",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T11:32:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 17
+    },
+    "18": {
+      "userId": 1,
+      "hash": "0x5712d7869a42e6fca67d3b7b44656829f3b0be585ce2911ea6eaa7472873afb3",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T10:44:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 18
+    },
+    "19": {
+      "userId": 1,
+      "hash": "0xbfe574e2371602caace77ee11df2a8e3a17109cb03b1c389d98c107e93649208",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T10:39:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 19
+    },
+    "20": {
+      "userId": 1,
+      "hash": "0x43e77a298ecf9a5656b6e167e0b7dc858e20a25d4d40e71fb78da40504a2e392",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T10:38:24.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 20
+    },
+    "21": {
+      "userId": 1,
+      "hash": "0x3a1bf9bbe0f4bcb7931c3b0ebaa329db68e66e964a5490c02b3112694c39bd02",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T08:52:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 21
+    },
+    "22": {
+      "userId": 1,
+      "hash": "0x5e28a41feadea013e70754cfcf1a23fef07313961a5e32bb47202f8ec8b000f6",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T08:00:12.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 22
+    },
+    "23": {
+      "userId": 1,
+      "hash": "0x6e901cd4cee350340af64d74eaa768de36f6c182800e4a01a07eb99ea230bcf6",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T07:34:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 23
+    },
+    "24": {
+      "userId": 1,
+      "hash": "0xe4694ab34951c8dbd0775d8e7d9d580bb8e98ab6ec27889fe2800f0c377a1526",
+      "from": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "to": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "amount": "0.12",
+      "timestamp": "2025-05-08T07:33:36.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 24
+    },
+    "25": {
+      "userId": 1,
+      "hash": "0xa59fd48ccd4653b48eb0dfdce542bf27c18f47f318ea4c9088c449ff2451abd9",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T07:25:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 25
+    },
+    "26": {
+      "userId": 1,
+      "hash": "0xf1817a2ff8cb16b864b16c7737b5ae404f3322e321ec8068498b07a3bdcf47fc",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-08T07:24:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 26
+    },
+    "27": {
+      "userId": 1,
+      "hash": "0x4bb9495e3e090c9eb7efe38d5cbe978708c72a96983d461a9d8a261d10ef9ab5",
+      "from": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "to": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "amount": "0.23504702218424026",
+      "timestamp": "2025-05-07T09:45:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 27
+    },
+    "28": {
+      "userId": 1,
+      "hash": "0x21a3f5680016580676259f08c56604997fe94923c7643e365300c7797b92484d",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-06T18:38:48.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 28
+    },
+    "29": {
+      "userId": 1,
+      "hash": "0x09052692fd807672649d15660901866aa29a381988319341f68e1eb985d7684b",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-06T18:31:12.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 29
+    },
+    "30": {
+      "userId": 1,
+      "hash": "0x6c5d241ad381cb09506bfc341ccb885c5395b85d8ef1dcab504d9a20b47b51dc",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-06T18:28:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 30
+    },
+    "31": {
+      "userId": 1,
+      "hash": "0xeaf4a0be37edc85a0c715bedbe1e21bc47f586d351380bb80559699fe229be31",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-06T18:17:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 31
+    },
+    "32": {
+      "userId": 1,
+      "hash": "0x0b0a3853ac98211671a75d4fa81e4619c9c0726c812af455d6386f281450147f",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-06T18:13:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 32
+    },
+    "33": {
+      "userId": 1,
+      "hash": "0xfe090cd09d25c60bd1106a1bcdf77bcd64ef3e1c7deb74a2b8c00ec282ee6965",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-06T17:55:12.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 33
+    },
+    "34": {
+      "userId": 1,
+      "hash": "0x951fbfd688bf4eb57e8a232b00fa342a32d8353931f23b09289e446d772d5ab4",
+      "from": "0x6efb29cee3b414272eb7a8f3ebabf873d36bc033",
+      "to": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "amount": "0.05",
+      "timestamp": "2025-05-06T17:07:24.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 34
+    },
+    "35": {
+      "userId": 1,
+      "hash": "0x77cc08c5f2ac440fa20f29bf7f9e9a7bd73393841835923b1d56032627beec5c",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-06T06:12:24.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 35
+    },
+    "36": {
+      "userId": 1,
+      "hash": "0x52bfc6408e313ace724ccc748389db581e12f02ed02c463384dd4ad45dfa2ffb",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.02",
+      "timestamp": "2025-05-09T09:50:12.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 36
+    },
+    "37": {
+      "userId": 1,
+      "hash": "0xe0c55dd4fe6405d97ede5e55a8aec209836e4594fbb19fe61ac975cc6959c698",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-09T09:54:24.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 37
+    },
+    "38": {
+      "userId": 1,
+      "hash": "0x384613c60cbc8ad8b215b044cdb07464bcc26c9003f4fe89c6fac1ae08f84779",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-09T15:24:12.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 38
+    },
+    "39": {
+      "userId": 1,
+      "hash": "0x8aef5a73c0fff38bb05fd43405fa8b04a8cae4b27b52c731760cdbca6d1e1878",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-09T15:34:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 39
+    },
+    "40": {
+      "userId": 1,
+      "hash": "0x34a0c519b147063219b93702bbd1c335a301b16b886b01792c9d7dd69abd780e",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.03",
+      "timestamp": "2025-05-09T15:35:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 40
+    },
+    "41": {
+      "userId": 1,
+      "hash": "0x806c3f946014c6322f9aa6a648cb9d8fb3a08b2e7c9251de18ae152bf2c2f43d",
+      "from": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "to": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "amount": "0.1701",
+      "timestamp": "2025-05-09T15:36:36.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "received",
+      "id": 41
+    },
+    "42": {
+      "userId": 1,
+      "hash": "0xc2925567c8de8502e0f4bc1293a6ac95c0f010247b19a8b36094461b3dfe9b67",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-12T17:33:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 42
+    },
+    "43": {
+      "userId": 1,
+      "hash": "0xc1d340ffd2b308d5d8aa8a9e7442b31ce7e269bf3eb214ba2af1345048275a83",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-12T17:31:36.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 43
+    },
+    "44": {
+      "userId": 1,
+      "hash": "0xe075b6907b91ae81fb72941d4719448960054cf34f45e9b0066bb1e037636807",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-12T09:10:00.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 44
+    },
+    "45": {
+      "userId": 1,
+      "hash": "0x34c2b23d770f26bfee535cc180dc97533e0a034250ee69edecb2f8c1bb177ba8",
+      "from": "0x88e49378b4438419b713819e7ca3c74770e77534",
+      "to": "0xa15102ae6edede8a188da2a2741451ed092f8ddf",
+      "amount": "0.01",
+      "timestamp": "2025-05-12T09:08:12.000Z",
+      "currency": "ETH",
+      "category": null,
+      "status": "confirmed",
+      "type": "sent",
+      "id": 45
+    }
+  },
+  "notifications": {
+    "2": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:15:00.000Z",
+      "id": 2,
+      "read": true
+    },
+    "3": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:20:22.304Z",
+      "id": 3,
+      "read": true
+    },
+    "4": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:20:23.249Z",
+      "id": 4,
+      "read": true
+    },
+    "5": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:22:52.863Z",
+      "id": 5,
+      "read": true
+    },
+    "6": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:23:09.449Z",
+      "id": 6,
+      "read": true
+    },
+    "7": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:23:16.051Z",
+      "id": 7,
+      "read": true
+    },
+    "8": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:23:16.051Z",
+      "id": 8,
+      "read": true
+    },
+    "9": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:24:50.771Z",
+      "id": 9,
+      "read": true
+    },
+    "10": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:24:50.771Z",
+      "id": 10,
+      "read": true
+    },
+    "11": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:25:10.776Z",
+      "id": 11,
+      "read": true
+    },
+    "12": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:25:10.777Z",
+      "id": 12,
+      "read": true
+    },
+    "13": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:25:19.407Z",
+      "id": 13,
+      "read": true
+    },
+    "14": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:25:19.407Z",
+      "id": 14,
+      "read": true
+    },
+    "15": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:26:31.823Z",
+      "id": 15,
+      "read": true
+    },
+    "16": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:26:31.824Z",
+      "id": 16,
+      "read": true
+    },
+    "17": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:26:40.121Z",
+      "id": 17,
+      "read": true
+    },
+    "18": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:26:40.122Z",
+      "id": 18,
+      "read": true
+    },
+    "19": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:26:43.454Z",
+      "id": 19,
+      "read": true
+    },
+    "20": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:26:43.453Z",
+      "id": 20,
+      "read": true
+    },
+    "21": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:35:27.902Z",
+      "id": 21,
+      "read": true
+    },
+    "22": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:35:27.905Z",
+      "id": 22,
+      "read": true
+    },
+    "23": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:35:46.156Z",
+      "id": 23,
+      "read": true
+    },
+    "24": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:35:46.157Z",
+      "id": 24,
+      "read": true
+    },
+    "25": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:35:51.930Z",
+      "id": 25,
+      "read": true
+    },
+    "26": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-09T15:35:51.930Z",
+      "id": 26,
+      "read": true
+    },
+    "27": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:41:42.998Z",
+      "id": 27,
+      "read": true
+    },
+    "28": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:41:48.024Z",
+      "id": 28,
+      "read": true
+    },
+    "29": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:41:48.025Z",
+      "id": 29,
+      "read": true
+    },
+    "30": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:45:27.208Z",
+      "id": 30,
+      "read": true
+    },
+    "31": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:45:27.208Z",
+      "id": 31,
+      "read": true
+    },
+    "32": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:45:35.931Z",
+      "id": 32,
+      "read": true
+    },
+    "33": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:45:35.931Z",
+      "id": 33,
+      "read": true
+    },
+    "34": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:46:45.229Z",
+      "id": 34,
+      "read": true
+    },
+    "35": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T05:46:45.228Z",
+      "id": 35,
+      "read": true
+    },
+    "36": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T06:06:10.022Z",
+      "id": 36,
+      "read": true
+    },
+    "37": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T06:06:10.024Z",
+      "id": 37,
+      "read": true
+    },
+    "38": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T06:06:15.389Z",
+      "id": 38,
+      "read": true
+    },
+    "39": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T06:06:15.388Z",
+      "id": 39,
+      "read": true
+    },
+    "40": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T06:06:16.855Z",
+      "id": 40,
+      "read": true
+    },
+    "41": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T06:06:22.350Z",
+      "id": 41,
+      "read": true
+    },
+    "42": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T06:06:24.482Z",
+      "id": 42,
+      "read": true
+    },
+    "43": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-13T06:06:24.483Z",
+      "id": 43,
+      "read": true
+    },
+    "44": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-14T17:16:03.699Z",
+      "id": 44,
+      "read": true
+    },
+    "45": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-14T17:16:03.700Z",
+      "id": 45,
+      "read": true
+    },
+    "46": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-14T17:16:08.379Z",
+      "id": 46,
+      "read": true
+    },
+    "47": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-14T17:16:08.378Z",
+      "id": 47,
+      "read": true
+    },
+    "48": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-14T17:16:12.676Z",
+      "id": 48,
+      "read": false
+    },
+    "49": {
+      "userId": 1,
+      "message": "⚠️ Budget limit exceeded! You've gone over your spending limit.",
+      "timestamp": "2025-05-14T17:16:12.677Z",
+      "id": 49,
+      "read": false
+    }
+  }
 }

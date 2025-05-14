@@ -9,14 +9,21 @@ import Dashboard from "@/pages/Dashboard";
 import Transactions from "@/pages/Transactions";
 import Budget from "@/pages/Budget";
 import Reports from "@/pages/Reports";
+import NotificationsPage from "@/pages/notifications";
+import Preferences from "@/pages/Preferences";
+import HomePage from "./pages/HomePage";
+import { WalletProvider } from "./contexts/WalletContext";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/" component={HomePage} />
       <Route path="/transactions" component={Transactions} />
       <Route path="/budget" component={Budget} />
       <Route path="/reports" component={Reports} />
+      <Route path="/notifications" component={NotificationsPage} />
+      <Route path="/preferences" component={Preferences} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -26,10 +33,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="light">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <WalletProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </WalletProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

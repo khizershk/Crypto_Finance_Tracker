@@ -71,23 +71,23 @@ export default function Budget() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-background dark:bg-gray-900">
       <Sidebar />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
         
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-gray-900 p-4 lg:p-6">
           {!isConnected && (
             <WalletAlert onConnect={connect} />
           )}
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div className="lg:col-span-2">
-              <Card>
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
                 <CardHeader>
-                  <CardTitle>Budget Management</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-foreground dark:text-white">Budget Management</CardTitle>
+                  <CardDescription className="text-muted-foreground dark:text-gray-400">
                     Set or update your spending budget for crypto transactions
                   </CardDescription>
                 </CardHeader>
@@ -100,7 +100,7 @@ export default function Budget() {
                           name="amount"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Budget Amount</FormLabel>
+                              <FormLabel className="text-foreground dark:text-gray-200">Budget Amount</FormLabel>
                               <FormControl>
                                 <Input 
                                   type="number" 
@@ -109,7 +109,7 @@ export default function Budget() {
                                   {...field} 
                                 />
                               </FormControl>
-                              <FormDescription>
+                              <FormDescription className="text-muted-foreground dark:text-gray-400">
                                 The maximum amount you want to spend
                               </FormDescription>
                               <FormMessage />
@@ -131,11 +131,9 @@ export default function Budget() {
                                 </FormControl>
                                 <SelectContent>
                                   <SelectItem value="ETH">ETH</SelectItem>
-                                  <SelectItem value="BTC">BTC</SelectItem>
-                                  <SelectItem value="USDT">USDT</SelectItem>
                                 </SelectContent>
                               </Select>
-                              <FormDescription>
+                              <FormDescription className="text-muted-foreground dark:text-gray-400">
                                 Currency for your budget
                               </FormDescription>
                               <FormMessage />
@@ -149,13 +147,13 @@ export default function Budget() {
                           control={form.control}
                           name="periodStart"
                           render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                              <FormLabel>Period Start</FormLabel>
+                            <FormItem>
+                              <FormLabel>Start Date</FormLabel>
                               <Popover>
                                 <PopoverTrigger asChild>
                                   <FormControl>
                                     <Button
-                                      variant={"outline"}
+                                      variant="outline"
                                       className={cn(
                                         "w-full pl-3 text-left font-normal",
                                         !field.value && "text-muted-foreground"
@@ -175,7 +173,7 @@ export default function Budget() {
                                   />
                                 </PopoverContent>
                               </Popover>
-                              <FormDescription>
+                              <FormDescription className="text-muted-foreground dark:text-gray-400">
                                 Start date of your budget period
                               </FormDescription>
                               <FormMessage />
@@ -187,13 +185,13 @@ export default function Budget() {
                           control={form.control}
                           name="periodEnd"
                           render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                              <FormLabel>Period End</FormLabel>
+                            <FormItem>
+                              <FormLabel>End Date</FormLabel>
                               <Popover>
                                 <PopoverTrigger asChild>
                                   <FormControl>
                                     <Button
-                                      variant={"outline"}
+                                      variant="outline"
                                       className={cn(
                                         "w-full pl-3 text-left font-normal",
                                         !field.value && "text-muted-foreground"
@@ -213,7 +211,7 @@ export default function Budget() {
                                   />
                                 </PopoverContent>
                               </Popover>
-                              <FormDescription>
+                              <FormDescription className="text-muted-foreground dark:text-gray-400">
                                 End date of your budget period
                               </FormDescription>
                               <FormMessage />
@@ -221,89 +219,27 @@ export default function Budget() {
                           )}
                         />
                       </div>
-                      
+
                       <Button 
                         type="submit" 
-                        className="w-full md:w-auto"
-                        disabled={isLoading || createBudget.isPending || updateBudget.isPending}
+                        disabled={isLoading}
+                        className="relative"
                       >
-                        {budget ? 'Update Budget' : 'Set Budget'}
+                        {isLoading && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-primary/50 rounded-md">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          </div>
+                        )}
+                        {budget ? "Update Budget" : "Create Budget"}
                       </Button>
                     </form>
                   </Form>
                 </CardContent>
               </Card>
-              
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>Budget Tips</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <Alert className="bg-blue-50 border-blue-200">
-                      <AlertTitle className="text-blue-800">Monthly Tracking</AlertTitle>
-                      <AlertDescription className="text-blue-700">
-                        Setting a monthly budget is a good way to track and control your crypto spending.
-                      </AlertDescription>
-                    </Alert>
-                    
-                    <Alert className="bg-green-50 border-green-200">
-                      <AlertTitle className="text-green-800">Notifications</AlertTitle>
-                      <AlertDescription className="text-green-700">
-                        You'll receive notifications when you approach or exceed your budget limit.
-                      </AlertDescription>
-                    </Alert>
-                    
-                    <Alert className="bg-purple-50 border-purple-200">
-                      <AlertTitle className="text-purple-800">Adjustments</AlertTitle>
-                      <AlertDescription className="text-purple-700">
-                        Review and adjust your budget regularly based on your actual spending patterns.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
-            
-            <div className="space-y-6">
+
+            <div className="lg:col-span-1">
               <BudgetStatus />
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Budget History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {budget ? (
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="text-sm font-medium text-slate-500">Last Updated</h4>
-                        <p className="text-slate-900">
-                          {new Date().toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                          })}
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <h4 className="text-sm font-medium text-slate-500">Previous Budget</h4>
-                        <p className="text-slate-900">{Number(budget.amount) - 0.1} {budget.currency}</p>
-                      </div>
-                      
-                      <div>
-                        <h4 className="text-sm font-medium text-slate-500">Change</h4>
-                        <p className="text-green-600">+0.1 {budget.currency} (Increased)</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <p className="text-slate-500">No budget history available</p>
-                      <p className="text-sm text-slate-400 mt-1">Set your first budget to start tracking</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
             </div>
           </div>
         </main>

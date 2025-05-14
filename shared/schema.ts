@@ -45,12 +45,12 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
-export const insertBudgetSchema = createInsertSchema(budgets).pick({
-  userId: true,
-  amount: true,
-  periodStart: true,
-  periodEnd: true,
-  currency: true,
+export const insertBudgetSchema = z.object({
+  userId: z.number(),
+  amount: z.string(),
+  periodStart: z.coerce.date(),
+  periodEnd: z.coerce.date(),
+  currency: z.string()
 });
 
 export const insertTransactionSchema = createInsertSchema(transactions).pick({
@@ -79,6 +79,11 @@ export type User = {
   id: number;
   username: string;
   password: string;
+  preferences: {
+    theme: 'light' | 'dark';
+    notifications: boolean;
+    currency: string;
+  };
 };
 
 export type InsertBudget = z.infer<typeof insertBudgetSchema>;

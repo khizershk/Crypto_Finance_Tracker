@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useBudget } from '@/hooks/useBudget';
-import { DEFAULT_USER_ID } from '@/lib/types';
+import { DEFAULT_USER_ID, Transaction } from '@/lib/types';
 import { SpendingTrend } from '@/components/charts/SpendingTrend';
 import { SpendingByCategory } from '@/components/charts/SpendingByCategory';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,7 +19,9 @@ export default function Reports() {
   const [showSidebar, setShowSidebar] = useState(true);
   const { isConnected, connect } = useMetaMask();
   const [reportType, setReportType] = useState('monthly');
-  const { transactions } = useTransactions(DEFAULT_USER_ID);
+  const { transactions } = useTransactions(DEFAULT_USER_ID) as {
+    transactions: Transaction[];
+  };
   const { budget, calculateBudgetUsage } = useBudget(DEFAULT_USER_ID);
 
   const toggleSidebar = () => {
@@ -41,13 +43,13 @@ export default function Reports() {
     const headers = ['Date', 'Type', 'From', 'To', 'Amount', 'Currency', 'Category', 'Status'];
     const csvRows = [headers.join(',')];
     
-    transactions.forEach((tx: any) => {
+    transactions.forEach((tx: Transaction) => {
       const row = [
         new Date(tx.timestamp).toISOString().split('T')[0],
         tx.type,
         tx.from,
         tx.to,
-        tx.amount,
+        tx.amount.toString(),
         tx.currency,
         tx.category || 'Other',
         tx.status
@@ -58,7 +60,6 @@ export default function Reports() {
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join('\n');
     const encodedUri = encodeURI(csvContent);
     
-    // Create a download link and trigger download
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
     link.setAttribute('download', `crypto_transactions_${new Date().toISOString().split('T')[0]}.csv`);
@@ -71,16 +72,16 @@ export default function Reports() {
     if (!transactions) return { sent: 0, received: 0, net: 0, count: 0 };
     
     const sent = transactions
-      .filter((tx: any) => tx.type === 'sent')
-      .reduce((sum: number, tx: any) => sum + Number(tx.amount), 0);
+      .filter((tx: Transaction) => tx.type === 'sent')
+      .reduce((sum: number, tx: Transaction) => sum + Number(tx.amount), 0);
     
     const received = transactions
-      .filter((tx: any) => tx.type === 'received')
-      .reduce((sum: number, tx: any) => sum + Number(tx.amount), 0);
+      .filter((tx: Transaction) => tx.type === 'received')
+      .reduce((sum: number, tx: Transaction) => sum + Number(tx.amount), 0);
     
     return {
-      sent: sent,
-      received: received,
+      sent,
+      received,
       net: received - sent,
       count: transactions.length
     };
@@ -90,21 +91,21 @@ export default function Reports() {
   const budgetUsage = budget ? calculateBudgetUsage(transactions) : null;
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-background dark:bg-gray-900">
       <Sidebar />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
         
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-gray-900 p-4 lg:p-6">
           {!isConnected && (
             <WalletAlert onConnect={connect} />
           )}
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Financial Reports</h1>
-              <p className="text-slate-500">Generate and download reports of your crypto activity</p>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Financial Reports</h1>
+              <p className="text-slate-500 dark:text-gray-400">Generate and download reports of your crypto activity</p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3">
@@ -135,19 +136,19 @@ export default function Reports() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <Card>
+            <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <p className="text-sm font-medium text-slate-500">Total Transactions</p>
-                  <h3 className="text-3xl font-bold text-slate-900 mt-1">{summary.count}</h3>
+                  <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Total Transactions</p>
+                  <h3 className="text-3xl font-bold text-slate-900 dark:text-white mt-1">{summary.count}</h3>
                 </div>
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <p className="text-sm font-medium text-slate-500">Total Sent</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Total Sent</p>
                   <h3 className="text-3xl font-bold text-red-600 mt-1">
                     {summary.sent.toFixed(4)} ETH
                   </h3>
@@ -155,10 +156,10 @@ export default function Reports() {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <p className="text-sm font-medium text-slate-500">Total Received</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Total Received</p>
                   <h3 className="text-3xl font-bold text-green-600 mt-1">
                     {summary.received.toFixed(4)} ETH
                   </h3>
@@ -166,10 +167,10 @@ export default function Reports() {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <p className="text-sm font-medium text-slate-500">Net Balance</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Net Balance</p>
                   <h3 className={`text-3xl font-bold mt-1 ${summary.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {summary.net.toFixed(4)} ETH
                   </h3>
@@ -191,7 +192,7 @@ export default function Reports() {
             </TabsList>
             
             <TabsContent value="summary">
-              <Card>
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
                 <CardHeader>
                   <CardTitle>Activity Summary</CardTitle>
                   <CardDescription>Overview of your crypto transactions</CardDescription>
@@ -264,7 +265,7 @@ export default function Reports() {
             </TabsContent>
             
             <TabsContent value="transactions">
-              <Card>
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
                 <CardHeader>
                   <CardTitle>Transaction Details</CardTitle>
                   <CardDescription>Detailed list of all your transactions</CardDescription>
@@ -339,7 +340,7 @@ export default function Reports() {
             </TabsContent>
             
             <TabsContent value="budget">
-              <Card>
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
                 <CardHeader>
                   <CardTitle>Budget Analysis</CardTitle>
                   <CardDescription>Track your spending against your budget</CardDescription>
@@ -349,21 +350,21 @@ export default function Reports() {
                     <div className="space-y-8">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="text-center p-4 bg-slate-50 rounded-lg">
-                          <p className="text-sm font-medium text-slate-500">Total Budget</p>
+                          <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Total Budget</p>
                           <h3 className="text-2xl font-bold text-slate-900 mt-1">
                             {budgetUsage.total.toFixed(2)} {budget.currency}
                           </h3>
                         </div>
                         
                         <div className="text-center p-4 bg-slate-50 rounded-lg">
-                          <p className="text-sm font-medium text-slate-500">Amount Spent</p>
+                          <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Amount Spent</p>
                           <h3 className="text-2xl font-bold text-red-600 mt-1">
                             {budgetUsage.used.toFixed(2)} {budget.currency}
                           </h3>
                         </div>
                         
                         <div className="text-center p-4 bg-slate-50 rounded-lg">
-                          <p className="text-sm font-medium text-slate-500">Remaining</p>
+                          <p className="text-sm font-medium text-slate-500 dark:text-gray-400">Remaining</p>
                           <h3 className="text-2xl font-bold text-green-600 mt-1">
                             {budgetUsage.remaining.toFixed(2)} {budget.currency}
                           </h3>
@@ -478,7 +479,7 @@ function ResponsiveBarChart({ data }: { data: any[] }) {
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full bg-slate-50 rounded-lg">
-        <p className="text-slate-500">No data available</p>
+        <p className="text-slate-500 dark:text-gray-400">No data available</p>
       </div>
     );
   }

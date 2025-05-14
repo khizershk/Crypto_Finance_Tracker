@@ -1,5 +1,5 @@
 // Utility script to test Etherscan API directly from the server
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function fetchEtherscanTransactions(address, apiKey, network = 'mainnet') {
   try {

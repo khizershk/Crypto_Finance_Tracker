@@ -10,6 +10,7 @@ import { TransactionList } from '@/components/TransactionList';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTransactions } from '@/hooks/useTransactions';
 import { DEFAULT_USER_ID } from '@/lib/types';
+import { Transaction } from '@/lib/types';
 
 export default function Dashboard() {
   const [showSidebar, setShowSidebar] = useState(true);
@@ -21,21 +22,21 @@ export default function Dashboard() {
   };
 
   const getEthBalance = () => {
-    if (!transactions) return 0;
+    if (!transactions || !Array.isArray(transactions)) return 0;
     
     const sent = transactions
-      .filter((tx: any) => tx.type === 'sent')
-      .reduce((sum: number, tx: any) => sum + Number(tx.amount), 0);
+      .filter((tx: Transaction) => tx.type === 'sent')
+      .reduce((sum: number, tx: Transaction) => sum + Number(tx.amount), 0);
     
     const received = transactions
-      .filter((tx: any) => tx.type === 'received')
-      .reduce((sum: number, tx: any) => sum + Number(tx.amount), 0);
+      .filter((tx: Transaction) => tx.type === 'received')
+      .reduce((sum: number, tx: Transaction) => sum + Number(tx.amount), 0);
     
     return received - sent;
   };
 
   const getRecentActivity = () => {
-    if (!transactions || transactions.length === 0) {
+    if (!transactions || !Array.isArray(transactions) || transactions.length === 0) {
       return { count: 0, lastTx: 'N/A' };
     }
 
@@ -43,12 +44,12 @@ export default function Dashboard() {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
     
-    const weekTxs = transactions.filter((tx: any) => 
+    const weekTxs = transactions.filter((tx: Transaction) => 
       new Date(tx.timestamp) > oneWeekAgo
     );
     
     // Find the most recent transaction
-    const sortedTxs = [...transactions].sort((a: any, b: any) => 
+    const sortedTxs = [...transactions].sort((a: Transaction, b: Transaction) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
     
@@ -84,7 +85,7 @@ export default function Dashboard() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
         
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto bg-background dark:bg-gray-900 p-4 lg:p-6">
           {!isConnected && (
             <WalletAlert onConnect={connect} />
           )}
@@ -92,36 +93,36 @@ export default function Dashboard() {
           <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <BudgetStatus />
             
-            <Card className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+            <Card className="p-5 rounded-lg border shadow-sm dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="p-0">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-slate-800">Total Value</h3>
+                  <h3 className="text-lg font-semibold text-foreground dark:text-gray-100">Total Value</h3>
                   <i className="ri-money-dollar-circle-line text-xl text-slate-400"></i>
                 </div>
                 <div className="flex items-baseline">
-                  <span className="text-2xl font-bold text-slate-800">{balance.toFixed(2)} ETH</span>
+                  <span className="text-2xl font-bold text-foreground dark:text-white">{balance.toFixed(2)} ETH</span>
                   <span className="ml-2 text-sm text-green-600">+0.05 (2.1%)</span>
                 </div>
                 <div className="flex items-center mt-4 text-sm">
-                  <span className="text-slate-600">≈ ${(balance * 1700).toFixed(2)} USD</span>
+                  <span className="text-muted-foreground dark:text-gray-400">≈ ${(balance * 1700).toFixed(2)} USD</span>
                   <span className="ml-2 px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">↑ 2.3%</span>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+            <Card className="p-5 rounded-lg border shadow-sm dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="p-0">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-slate-800">Recent Activity</h3>
+                  <h3 className="text-lg font-semibold text-foreground dark:text-gray-100">Recent Activity</h3>
                   <i className="ri-history-line text-xl text-slate-400"></i>
                 </div>
                 <div className="flex items-baseline">
-                  <span className="text-2xl font-bold text-slate-800">{weeklyTxCount}</span>
+                  <span className="text-2xl font-bold text-foreground dark:text-white">{weeklyTxCount}</span>
                   <span className="ml-2 text-sm text-slate-600">transactions this week</span>
                 </div>
                 <div className="flex justify-between mt-4 text-sm">
-                  <span className="text-slate-600">Last transaction:</span>
-                  <span className="font-medium text-slate-800">{lastTxTime}</span>
+                  <span className="text-muted-foreground dark:text-gray-400">Last transaction:</span>
+                  <span className="font-medium text-foreground dark:text-gray-300">{lastTxTime}</span>
                 </div>
               </CardContent>
             </Card>

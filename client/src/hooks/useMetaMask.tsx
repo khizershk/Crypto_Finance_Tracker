@@ -78,11 +78,12 @@ export function useMetaMask() {
       // Using Etherscan API to get real transaction history
       // Access the environment variable from Vite
       const apiKey = import.meta.env.VITE_ETHERSCAN_API_KEY;
-      console.log('Using Etherscan API with key available:', apiKey ? 'Yes' : 'No');
+      console.log('Using Etherscan API with key:', apiKey ? apiKey.substring(0, 6) + '...' : 'Not Found');
       
       if (!apiKey) {
-        console.error('Etherscan API key not found');
-        throw new Error('Etherscan API key not found');
+        console.error('Etherscan API key not found in environment variables');
+        console.log('Please ensure VITE_ETHERSCAN_API_KEY is set in your .env file');
+        throw new Error('Etherscan API key not configured. Please check your environment variables.');
       }
       
       // Determine the correct Etherscan API URL based on the network
@@ -90,6 +91,7 @@ export function useMetaMask() {
       
       // Log the chainId to help debug
       console.log('Chain ID:', state.chainId);
+      console.log('Network name:', chainName);
       
       // Check network by chainId (more reliable than name)
       if (chainName === 'sepolia' || state.chainId === '11155111') {

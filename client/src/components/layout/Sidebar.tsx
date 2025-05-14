@@ -8,7 +8,7 @@ interface NavigationItem {
 }
 
 const mainNavItems: NavigationItem[] = [
-  { icon: 'ri-dashboard-line', label: 'Dashboard', path: '/' },
+  { icon: 'ri-dashboard-line', label: 'Dashboard', path: '/dashboard' },
   { icon: 'ri-exchange-dollar-line', label: 'Transactions', path: '/transactions' },
   { icon: 'ri-wallet-3-line', label: 'Budget', path: '/budget' },
   { icon: 'ri-file-chart-line', label: 'Reports', path: '/reports' },
@@ -29,7 +29,8 @@ export function Sidebar() {
           <div className="bg-primary text-white p-2 rounded">
             <i className="ri-bar-chart-box-line text-xl"></i>
           </div>
-          <h1 className="text-xl font-bold">CryptoTrack</h1>
+          <h1 className="text-xl font-bold">CryptoFinane
+            Track</h1>
         </div>
       </div>
       
@@ -78,15 +79,15 @@ export function Sidebar() {
       <div className="p-4 border-t border-slate-200">
         <div className="flex items-center space-x-3">
           <div className="h-9 w-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
-            <span className="font-medium text-sm">JD</span>
+            <i className="ri-user-line text-lg"></i>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium">John Doe</p>
-            <p className="text-xs text-slate-500 truncate">john@example.com</p>
+            <p className="text-sm font-medium">Logout</p>
+            <p className="text-xs text-slate-500 truncate"></p>
           </div>
-          <button className="text-slate-400 hover:text-slate-600">
+          <Link href="/" className="text-slate-400 hover:text-slate-600">
             <i className="ri-logout-box-r-line"></i>
-          </button>
+          </Link>
         </div>
       </div>
     </aside>

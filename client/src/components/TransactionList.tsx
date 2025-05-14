@@ -10,7 +10,20 @@ interface TransactionListProps {
 }
 
 export function TransactionList({ limit }: TransactionListProps) {
-  const { transactions, isLoading } = useTransactions(DEFAULT_USER_ID);
+  const { transactions, isLoading } = useTransactions(DEFAULT_USER_ID) as {
+  transactions: {
+    id: string;
+    timestamp: string;
+    type: 'sent' | 'received';
+    category: string;
+    to?: string;
+    from?: string;
+    amount: number;
+    currency: string;
+    status: 'confirmed' | 'pending';
+  }[];
+  isLoading: boolean;
+};
 
   if (isLoading) {
     return (

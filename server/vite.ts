@@ -36,7 +36,10 @@ export async function setupVite(app: Express, server: Server) {
         process.exit(1);
       },
     },
-    server: serverOptions,
+    server: {
+      ...serverOptions,
+      allowedHosts: ['localhost']
+    },
     appType: "custom",
   });
 
@@ -45,12 +48,25 @@ export async function setupVite(app: Express, server: Server) {
     const url = req.originalUrl;
 
     try {
-      const clientTemplate = path.resolve(
-        import.meta.dirname,
-        "..",
-        "client",
-        "index.html",
-      );
+      const clientDir = path.resolve(process.cwd(), "client");
+      if (!fs.existsSync(clientDir)) {
+        throw new Error(`Could not find the client directory: ${clientDir}. Make sure the directory exists.`);
+      }
+
+      const clientTemplate = path.resolve(clientDir, "index.html");
+      
+      // Log the resolved path for debugging
+      log(`Resolved client template path: ${clientTemplate}`, "vite");
+
+      // Check if the template file exists before attempting to read it
+      if (!fs.existsSync(clientTemplate)) {
+        throw new Error(`Could not find the client template: ${clientTemplate}. Make sure the file exists.`);
+      }
+
+      // Check if the template file exists before attempting to read it
+      if (!fs.existsSync(clientTemplate)) {
+        throw new Error(`Could not find the client template: ${clientTemplate}. Make sure the file exists.`);
+      }
 
       // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
@@ -68,7 +84,7 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "public");
+  const distPath = path.resolve(process.cwd(), "dist", "public");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(

@@ -1,9 +1,11 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { connectToDatabase, connectToPgDatabase } from "./db";
+import { connectToDatabase } from "./db";
 import { storage, initializeStorage } from "./storage";
-import { initializeDatabase } from "./initDb";
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const app = express();
 app.use(express.json());
@@ -41,35 +43,17 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
-    // Attempt to connect to databases 
-    let connectedToMongo = false;
-    let connectedToPg = false;
-    
-    // We'll prioritize MongoDB connection below
-    // (This section intentionally left empty to avoid duplicate connection attempts)
-    
-    // First priority is MongoDB (as requested by user)
     try {
       console.log("Initializing MongoDB database...");
-      connectedToMongo = await connectToDatabase();
-      if (connectedToMongo) {
+      const connected = await connectToDatabase();
+      if (connected) {
         console.log("MongoDB connection successful");
+      } else {
+        throw new Error("MongoDB connection failed");
       }
     } catch (error) {
       console.error("Error connecting to MongoDB:", error);
-    }
-    
-    // Only try PostgreSQL if MongoDB fails
-    if (!connectedToMongo) {
-      try {
-        console.log("Falling back to PostgreSQL...");
-        connectedToPg = await connectToPgDatabase();
-        if (connectedToPg) {
-          console.log("PostgreSQL connection successful");
-        }
-      } catch (error) {
-        console.error("Error connecting to PostgreSQL:", error);
-      }
+      process.exit(1); // exit the app if DB fails
     }
     
     // Initialize storage system

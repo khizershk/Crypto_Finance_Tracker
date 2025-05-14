@@ -4,8 +4,10 @@ import { storage, initializeStorage } from "./storage";
 import { 
   insertBudgetSchema, 
   insertTransactionSchema, 
-  insertNotificationSchema 
+  insertNotificationSchema,
+  insertUserSchema
 } from "@shared/schema";
+import { sendBudgetExceededEmail } from "./utils/sendEmail";
 
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -24,6 +26,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   app.use(handleZodError);
+
+  // User preferences routes
+  app.get('/api/users/:userId/preferences', async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    const user = await storage.getUser(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user.preferences);
+  });
+
+  app.patch('/api/users/:userId/preferences', async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    const { theme, notifications, currency } = req.body;
+    const preferences = {
+      theme: theme || 'light',
+      notifications: notifications ?? true,
+      currency: currency || 'ETH'
+    };
+
+    try {
+      const updatedUser = await storage.updateUserPreferences(userId, preferences);
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json(updatedUser.preferences);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to update preferences' });
+    }
+  });
+
 
   // Budget routes
   app.get('/api/budget', async (req, res) => {
@@ -188,6 +230,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             timestamp: new Date(),
           });
           console.log('Budget notification created');
+          
+          // Send email notification
+          const user = await storage.getUser(userId);
+          if (user) {
+            const exceededAmount = totalSpent - Number(budget.amount);
+            await sendBudgetExceededEmail(user.username, exceededAmount);
+          }
         }
       } else {
         console.log('User has no budget set');
@@ -243,10 +292,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/notifications', async (req, res) => {
     try {
-      const notificationData = insertNotificationSchema.parse(req.body);
+      // ✅ Convert timestamp string to Date object BEFORE parsing
+      const fixedBody = {
+        ...req.body,
+        timestamp: new Date(req.body.timestamp),
+      };
+  
+      const notificationData = insertNotificationSchema.parse(fixedBody);
+  
       const newNotification = await storage.createNotification(notificationData);
       res.status(201).json(newNotification);
     } catch (error) {
+      console.error('Notification Error:', error);
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
         return res.status(400).json({ message: validationError.message });
@@ -254,7 +311,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to create notification' });
     }
   });
-
+  
+  
+  
   app.patch('/api/notifications/:id/read', async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
